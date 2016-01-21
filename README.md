@@ -4,7 +4,7 @@ WiFi-Pumpkin
 
 Framework for Rogue Wi-Fi Access Point Attack
 ### Description
-WiFi-Pumpkin is a security tool that provides the Rogue access point to Man-In-The-Middle and network attacks. Purporting to provide wireless Internet services, but snooping on the traffic. Can be used to capture of credentials of unsuspecting users by either snooping the communication by phishing.
+WiFi-Pumpkin is a security tool that provides the Rogue access point to Man-In-The-Middle and network attacks. Purporting to provide wireless Internet services, but snooping on the traffic. Can be used to capture the credentials of unsuspecting users either by snooping the communication or by phishing.
 
 ### Installation
 
