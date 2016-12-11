@@ -99,14 +99,14 @@ class PopUpPlugins(QVBoxLayout):
         desc_responder  = QTableWidgetItem()
 
         # set text description plugins
-        desc_dns2proxy.setText('This tools offer a different features '
+        desc_dns2proxy.setText('This tool offers different features '
         'for post-explotation once you change the DNS server to a Victim. coded by: LeonardoNve')
         desc_sergioproxy.setText('Sergio proxy is an HTTP proxy that was written '
         'in Python for the Twisted framework. coded by: LeonardoNve')
         desc_bdfproxy.setText('Patch Binaries via MITM: BackdoorFactory + mitmProxy, '
         'bdfproxy-ng is a fork and review of the original BDFProxy. coded by: secretsquirrel.')
-        desc_netcreds.setText('Sniff passwords and hashes from an interface or pcap file. coded by: Dan McInerney')
-        desc_responder.setText('Responder an LLMNR, NBT-NS and MDNS poisoner. '
+        desc_netcreds.setText('Sniffs passwords and hashes from an interface or pcap file. coded by: Dan McInerney')
+        desc_responder.setText('Responder and LLMNR, NBT-NS and MDNS poisoner. '
         'By default, the tool will only answer to File Server Service request, which is for SMB.')
 
         self.tableplugins.setItem(0, 2, desc_dns2proxy)
@@ -283,7 +283,7 @@ class PopUpServer(QWidget):
         self.GroupBox.setLayout(self.FormLayout)
         self.btntemplates       = QPushButton('Phishing M.')
         self.btnStopServer      = QPushButton('Stop Server')
-        self.btnRefresh         = QPushButton('ReFresh')
+        self.btnRefresh         = QPushButton('Refresh')
         self.txt_IP             = QLineEdit(self)
         self.ComboIface         = QComboBox(self)
         self.txt_IP.setVisible(False)

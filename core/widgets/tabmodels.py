@@ -141,8 +141,8 @@ class PumpkinProxy(QVBoxLayout):
             self.ProcessReadLogger()
             return self.main_method.set_proxy_scripts(True)
         self.sendError.emit('plugins::Proxy is not enabled.'
-        '\n\nthis module need a proxy server(sslstrip) to work,'
-        '\nchoice the plugin options with sslstrip enabled.'.format(self.argsLabel.text()))
+        '\n\nthis module needs a proxy server(sslstrip) to work.'
+        '\nPlease enable sslstrip in the Plugin Options.'.format(self.argsLabel.text()))
 
     def ProcessReadLogger(self):
         if path.exists('logs/AccessPoint/injectionPage.log'):
@@ -152,7 +152,7 @@ class PumpkinProxy(QVBoxLayout):
             self.connect(self.injectionThread,SIGNAL('Activated ( QString ) '), self.GetloggerInjection)
             self.injectionThread.setObjectName('Pump-Proxy::Capture')
             return self.injectionThread.start()
-        QMessageBox.warning(self,'error proxy logger','Pump-Proxy::capture is not found')
+        QMessageBox.warning(self,'Proxy Logger','Pump-Proxy::capture is not found')
 
     def GetloggerInjection(self,data):
         if Refactor.getSize('logs/AccessPoint/injectionPage.log') > 255790:
@@ -280,8 +280,8 @@ class PumpkinSettings(QVBoxLayout):
         self.layoutDHCP    = QFormLayout()
         self.layoutArea    = QFormLayout()
         self.layoutbuttons = QHBoxLayout()
-        self.btnDefault    = QPushButton('default')
-        self.btnSave       = QPushButton('save settings')
+        self.btnDefault    = QPushButton('Default')
+        self.btnSave       = QPushButton('Save Settings')
         self.btnSave.setIcon(QIcon('icons/export.png'))
         self.btnDefault.setIcon(QIcon('icons/settings.png'))
         self.dhcpClassIP   = QComboBox()
@@ -300,7 +300,7 @@ class PumpkinSettings(QVBoxLayout):
         self.subnet        = QLineEdit(self.FSettings.Settings.get_setting('dhcp','subnet'))
         self.broadcast     = QLineEdit(self.FSettings.Settings.get_setting('dhcp','broadcast'))
         self.dhcpClassIP.currentIndexChanged.connect(self.dhcpClassIPClicked)
-        self.GroupDHCP.setTitle('DHCP-settings')
+        self.GroupDHCP.setTitle('DHCP Settings')
         self.GroupDHCP.setLayout(self.layoutDHCP)
         self.layoutDHCP.addRow('Class Ranges',self.dhcpClassIP)
         self.layoutDHCP.addRow('default-lease-time',self.leaseTime_def)
@@ -348,7 +348,7 @@ class PumpkinSettings(QVBoxLayout):
         self.gridArea.addWidget(self.CB_dns2proxy,1,1)
         self.gridArea.addWidget(self.CB_responder,1,2)
         self.layoutArea.addRow(self.gridArea)
-        self.GroupArea.setTitle('Activity Monitor settings')
+        self.GroupArea.setTitle('Activity Monitor Settings')
         self.GroupArea.setLayout(self.layoutArea)
 
         # connects
@@ -464,7 +464,7 @@ class PumpkinSettings(QVBoxLayout):
         if not str(self.route.text()) in self.all_geteway_check:
             self.FSettings.Settings.set_setting('dhcp','classtype','Custom')
         self.btnSave.setEnabled(False)
-        self.sendMensage.emit('settings DHCP saved with success...')
+        self.sendMensage.emit('DHCP settings saved with success...')
         self.btnSave.setEnabled(True)
 
     def getPumpkinSettings(self):

@@ -30,7 +30,7 @@ def checkAppQTDesigner(style):
     from PyQt4.QtGui import QMessageBox
     if 'gtk+' in str(style).lower():
         QMessageBox.warning(None,'warning: bug GUI Qt::style ',
-        "\nPyQt4 app looks different when running with root, because of that the GUI not work 100%,"
+        "\nPyQt4 app looks different when running with root, because of that the GUI does not work 100%,"
         " some features not work. I don't find anything code or settings for fix this bug "
         "(if you have any solution for this send me feedback :D).\n\n"
         'if you want keep the normal user style, run app with "sudo".')

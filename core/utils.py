@@ -48,7 +48,7 @@ class set_monitor_mode(QDialog):
             return self.interface
         except Exception ,e:
             QMessageBox.information(self,'Monitor Mode',
-            'mode on device %s.your card not supports monitor mode'%(self.interface))
+            'Mode on device %s. Your card does not support Monitor Mode'%(self.interface))
     def setDisable(self):
         Popen(['ifconfig', self.interface, 'down'])
         Popen(['iwconfig', self.interface, 'mode','managed'])
@@ -70,7 +70,7 @@ class ThreadPhishingServer(QThread):
             self.send.emit(line.rstrip())
 
     def stop(self):
-        print 'Stop thread:' + self.objectName()
+        print 'Stopping Thread:' + self.objectName()
         if self.process is not None:
             self.process.terminate()
 
@@ -154,7 +154,7 @@ class Refactor:
                     else:
                         readFile[key][filename] = file.read()
 
-        contenthtml,HTML,emptyFile,activated_Files = Refactor.htmlContent('WiFi-Pumpkin Report Logger'),'',[],[]
+        contenthtml,HTML,emptyFile,activated_Files = Refactor.htmlContent('Report Logger'),'',[],[]
         for i in contenthtml['htmlheader']: HTML += i+"\n"
         if dataLogger != []:
             HTML += '</span><span class="s2">Session information::</span><span class="s1">\n\n'
