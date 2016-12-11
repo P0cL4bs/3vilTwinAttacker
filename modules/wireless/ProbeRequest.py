@@ -31,7 +31,7 @@ class frm_PMonitor(PumpkinModule):
         self.Requests   = []
         self.data       = {'Devices':[],'MacAddress': [], 'SSIDs':[]}
         self.loadtheme(self.configure.XmlThemeSelected())
-        self.setWindowTitle("Probe Request wifi Monitor")
+        self.setWindowTitle("Wireless Probe Request Monitor")
         self.setWindowIcon(QIcon('icons/icon.ico'))
         self.setGeometry(QRect(100, 100, 420, 450))
         self.setupGUI()
@@ -69,7 +69,7 @@ class frm_PMonitor(PumpkinModule):
         # create all buttons
         self.btn_scan = QPushButton('Start')
         self.btn_stop = QPushButton('Stop')
-        self.btn_refrash = QPushButton('Refrash')
+        self.btn_refrash = QPushButton('Refresh')
         self.btn_refrash.clicked.connect(self.loadCard)
         self.btn_stop.clicked.connect(self.StopProbeResquest)
         self.btn_scan.clicked.connect(self.StartProbeResquest)
@@ -151,7 +151,7 @@ class frm_PMonitor(PumpkinModule):
 
     def StartProbeResquest(self):
         if self.get_placa.currentText() == '':
-            return QMessageBox.information(self, 'Network Adapter', 'Network Adapter Not found try again.')
+            return QMessageBox.information(self, 'Network Adapter', 'Network Adapter not found. Try again.')
         self.btn_stop.setEnabled(True)
         self.btn_scan.setEnabled(False)
         set_monitor_mode(self.get_placa.currentText()).setEnable()

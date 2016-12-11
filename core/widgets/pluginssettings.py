@@ -5,7 +5,7 @@ from core.loaders.models.PackagesUI import *
 class BDFProxySettings(PumpkinModule):
     def __init__(self,parent=None):
         super(BDFProxySettings, self).__init__(parent)
-        self.setWindowTitle('DBFProxy-ng Plugin settings')
+        self.setWindowTitle('DBFProxy-ng Plugin Settings')
         self.setGeometry(0,0,480, 500)
         self.main       = QVBoxLayout()
         self.THeaders   = {'Config':[],'Value':[] }
@@ -58,7 +58,7 @@ class BDFProxySettings(PumpkinModule):
 
     def saveConfigObject(self):
         self.checkConfigKeysBDFProxy(saveObjct=True)
-        QMessageBox.information(self,'BDFProxy-ng settings','All settings in {} has been saved '
+        QMessageBox.information(self,'BDFProxy-ng settings','All settings in {} have been saved '
         'with success.'.format(str(self.configure.Settings.get_setting('plugins','bdfproxy_config'))))
         self.close()
 
@@ -84,7 +84,7 @@ class BDFProxySettings(PumpkinModule):
 
     def GUI(self):
         self.TabSettings = QTableWidget(50,2)
-        self.btnSave     = QPushButton('Save settings')
+        self.btnSave     = QPushButton('Save Settings')
         self.GroupBox    = QGroupBox(self)
         self.widget      = QWidget()
         self.layoutGroup = QVBoxLayout(self.widget)
@@ -112,7 +112,7 @@ class BDFProxySettings(PumpkinModule):
 class ResponderSettings(PumpkinModule):
     def __init__(self,parent=None):
         super(ResponderSettings, self).__init__(parent)
-        self.setWindowTitle('Responder Plugin settings')
+        self.setWindowTitle('Responder Plugin Settings')
         self.setGeometry(0,0,480, 500)
         self.main       = QVBoxLayout()
         self.THeaders   = {'Config':[],'Value':[] }
@@ -171,7 +171,7 @@ class ResponderSettings(PumpkinModule):
 
     def saveConfigObject(self):
         self.checkConfigKeysResponder(saveObjct=True)
-        QMessageBox.information(self,'Responder settings','All settings in {} has been saved '
+        QMessageBox.information(self,'Responder Settings','All settings in {} have been saved '
         'with success.'.format(str(self.configure.Settings.get_setting('plugins','responder_config'))))
         self.close()
 

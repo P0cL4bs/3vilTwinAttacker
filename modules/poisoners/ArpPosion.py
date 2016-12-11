@@ -31,7 +31,7 @@ class frm_Arp_Poison(PumpkinModule):
 
     def __init__(self,PhishingManager ,parent=None):
         super(frm_Arp_Poison, self).__init__(parent)
-        self.setWindowTitle('Arp Poison Attack ')
+        self.setWindowTitle('ARP Poison Attack')
         self.Main           = QVBoxLayout()
         self.owd            = getcwd()
         self.Ftemplates     = PhishingManager
@@ -43,7 +43,7 @@ class frm_Arp_Poison(PumpkinModule):
 
     def closeEvent(self, event):
         reply = QMessageBox.question(self, 'About Exit',
-        'Are you sure to close ArpPosion?', QMessageBox.Yes |
+        'Are you sure that you want to close ARP Posion?', QMessageBox.Yes |
             QMessageBox.No, QMessageBox.No)
         if reply == QMessageBox.Yes:
             event.accept()
@@ -167,7 +167,7 @@ class frm_Arp_Poison(PumpkinModule):
         self.form.addRow('Gateway:', self.txt_gateway)
         self.form.addRow('MAC address:', self.txt_mac)
         self.form.addRow('Redirect IP:', self.txt_redirect)
-        self.form.addRow('IP ranger Scan:',self.ip_range)
+        self.form.addRow('IP Scan Range:',self.ip_range)
         self.form.addRow('Network Adapter:',self.ComboIface)
         self.form.addRow(self.grid0)
         self.form.addRow(self.grid2)
@@ -265,7 +265,7 @@ class frm_Arp_Poison(PumpkinModule):
         self.StatusMonitor(False,'stas_arp')
     def Start_Attack(self):
         if  (len(self.txt_target.text()) and len(self.txt_mac.text()) and len(self.txt_gateway.text())) == 0:
-            QMessageBox.information(self, 'Error Arp Attacker', 'you need set the input correctly')
+            QMessageBox.information(self, 'ARP Poisoner', 'You need set the input correctly')
         else:
             chdir(self.owd)
             if (len(self.txt_target.text()) and len(self.txt_gateway.text())) and len(self.txt_mac.text()) != 0:
@@ -292,7 +292,7 @@ class frm_Arp_Poison(PumpkinModule):
                     self.ThreadDirc['Arp_posion'].append(redirectPackets)
                     redirectPackets.start()
                     return
-                QMessageBox.information(self,'Error Redirect IP','Redirect IP not found')
+                QMessageBox.information(self,'Redirect IP','Redirect IP not found')
 
     def Start_scan(self):
         Headers = []
@@ -308,7 +308,7 @@ class frm_Arp_Poison(PumpkinModule):
             for key in reversed(self.data.keys()):
                 Headers.append(key)
             return self.tables.setHorizontalHeaderLabels(Headers)
-        return QMessageBox.information(self,'Error in gateway','gateway not found.')
+        return QMessageBox.information(self,'Gateway','Gateway not found.')
 
     def get_result_scanner_ip(self,data):
         Headers = []

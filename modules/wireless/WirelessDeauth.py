@@ -31,7 +31,7 @@ class frm_deauth(PumpkinModule):
     def __init__(self, parent=None):
         super(frm_deauth, self).__init__(parent)
         self.Main           = QVBoxLayout()
-        self.setWindowTitle("Deauth Attack wireless Route")
+        self.setWindowTitle("Wireless Deauthentication Attack")
         self.setWindowIcon(QIcon('icons/icon.ico'))
         self.ApsCaptured    = {}
         self.data           = {'Bssid':[], 'Essid':[], 'Channel':[]}
@@ -41,13 +41,13 @@ class frm_deauth(PumpkinModule):
     def closeEvent(self, event):
         global threadloading
         if len(threadloading['deauth']) != 0 or len(threadloading['mdk3']) != 0:
-            reply = QMessageBox.question(self, 'About Exit',"Are you sure to quit?",
+            reply = QMessageBox.question(self, 'About Exit',"Are you sure that you want to quit?",
             QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
             if reply == QMessageBox.Yes:
                 event.accept()
                 for i in threadloading['deauth']:
                     i.terminate()
-                    print("[*] Deuath Thread Terminate")
+                    print("[*] Deuath Thread Terminated")
                 for i in threadloading['mdk3']:
                     i.stop(),i.join()
                 self.deleteLater()
@@ -101,16 +101,16 @@ class frm_deauth(PumpkinModule):
         self.linetarget = QLineEdit(self)
         self.input_client = QLineEdit(self)
         self.checkbox_client = QCheckBox(self)
-        self.checkbox_client.setText('set a Custom client to deauth')
+        self.checkbox_client.setText('Set a custom client to deauthenticate')
         self.checkbox_client.clicked.connect(self.get_event_checkbox_client)
         self.input_client.setText("ff:ff:ff:ff:ff:ff")
         self.btn_enviar = QPushButton("Send Attack", self)
         self.btn_enviar.clicked.connect(self.attack_deauth)
-        self.btn_scan_start = QPushButton("Start scan", self)
+        self.btn_scan_start = QPushButton("Start Scan", self)
         self.btn_scan_start.clicked.connect(self.SettingsScan)
         self.btn_stop = QPushButton("Stop  Attack ", self)
         self.btn_stop.clicked.connect(self.kill_thread)
-        self.btn_scan_stop = QPushButton('Stop scan',self)
+        self.btn_scan_stop = QPushButton('Stop Scan',self)
         self.btn_scan_stop.clicked.connect(self.kill_scanAP)
         self.btn_enviar.setFixedWidth(170)
         self.btn_stop.setFixedWidth(170)
@@ -143,7 +143,7 @@ class frm_deauth(PumpkinModule):
         self.GroupBoxSettings = QGroupBox()
         self.layoutGroupST = QVBoxLayout()
         self.GroupBoxSettings.setLayout(self.layoutGroupST)
-        self.GroupBoxSettings.setTitle('settings:')
+        self.GroupBoxSettings.setTitle('Settings:')
         self.layoutGroupST.addWidget(QLabel('Target:'))
         self.layoutGroupST.addWidget(self.linetarget)
         self.layoutGroupST.addWidget(QLabel('Options:'))
@@ -165,8 +165,8 @@ class frm_deauth(PumpkinModule):
     def get_event_checkbox_client(self):
         if self.configure.Settings.get_setting('settings','deauth') == 'packets_mdk3':
             QMessageBox.warning(self,'mdk3 Deauth',
-            'mdk3 Deauth not have this options, you can set custom '
-            'client deauth on modules->settings->Advanced tab (mdk3 args option) ')
+            'mdk3 Deauth not have these options, you can set custom '
+            'client deauth on Modules->Settings->Advanced tab (mdk3 args option) ')
             return self.checkbox_client.setCheckable(False)
         if self.checkbox_client.isChecked():
             self.input_client.setEnabled(True)
@@ -231,7 +231,7 @@ class frm_deauth(PumpkinModule):
         self.ApsCaptured    = {}
         self.data = {'Bssid':[], 'Essid':[], 'Channel':[]}
         if self.get_placa.currentText() == "":
-            QMessageBox.information(self, "Network Adapter", 'Network Adapter Not found try again.')
+            QMessageBox.information(self, "Network Adapter", 'Network Adapter not found. Try again.')
         else:
             self.interface = str(set_monitor_mode(self.get_placa.currentText()).setEnable())
             self.btn_scan_stop.setEnabled(True)
@@ -248,7 +248,7 @@ class frm_deauth(PumpkinModule):
                         self.thread_airodump.daemon = True
                         self.thread_airodump.start()
                     else:
-                        QMessageBox.information(self,'Error airodump','airodump-ng is not installed')
+                        QMessageBox.information(self,'airodump-ng','airodump-ng is not installed')
                         set_monitor_mode(self.get_placa.currentText()).setDisable()
 
 
@@ -256,12 +256,12 @@ class frm_deauth(PumpkinModule):
         global threadloading
         if hasattr(self,'threadScanAP'):
             if not self.threadScanAP.stopped:
-                return QMessageBox.warning(self,'scanner','you need to stop the scanner Access Point')
+                return QMessageBox.warning(self,'scanner','You need to stop the Access Point')
         if hasattr(self,'thread_airodump'):
             if self.thread_airodump.isAlive():
-                return QMessageBox.warning(self,'scanner','you need to stop the scanner Access Point')
+                return QMessageBox.warning(self,'scanner','You need to stop the Access Point')
         if self.linetarget.text() == '':
-            return QMessageBox.warning(self, 'Target Error', 'Please, first select Target for attack')
+            return QMessageBox.warning(self, 'Target Error', 'Please select a target to attack')
         # get args for thread attack
         self.btn_stop.setEnabled(True)
         self.btn_enviar.setEnabled(False)
@@ -286,7 +286,7 @@ class frm_deauth(PumpkinModule):
                 self.processmdk.setObjectName('Thread::mdk3')
                 threadloading['mdk3'].append(self.processmdk)
                 return self.processmdk.start()
-            QMessageBox.information(self,'Error mdk3','mkd3 not installed')
+            QMessageBox.information(self,'mdk3','mdk3 not installed')
             set_monitor_mode(self.get_placa.currentText()).setDisable()
 
     def AttackStatus(self,bool):
@@ -307,5 +307,5 @@ class frm_deauth(PumpkinModule):
                 if Refactor.check_is_mac(i.replace(' ', '')):
                     self.linetarget.setText(str(i))
             if self.linetarget.text() == '':
-                QMessageBox.information(self, 'MacAddress',
-                'Error check the Mac Target, please set the mac valid.')
+                QMessageBox.information(self, 'MAC Address',
+                'Please select a valid MAC Address as target.')
