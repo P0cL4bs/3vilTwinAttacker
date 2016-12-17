@@ -44,7 +44,7 @@ class frm_mac_generator(PumpkinModule):
 
     @pyqtSlot(QModelIndex)
     def combo_clicked(self, device):
-        if device == '':
+        if device == '' or device == 'lo':
             self.i_mac.setText('Not Found')
             return
         self.i_mac.setText(Refactor.get_interface_mac(device))
