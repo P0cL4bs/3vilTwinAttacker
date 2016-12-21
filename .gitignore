@@ -55,3 +55,10 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# DEB
+deb_tmp/
+
+# IDE
+# PyCharm
+.idea/

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=WiFi-Pumpkin
+Comment=A tool for creating a WiFi-Hotspot and executing MitM-Attacks
+Exec=gksudo wifi-pumpkin
+Icon=/usr/share/WiFi-Pumpkin/icons/icon.ico
+Terminal=false
+Type=Application
+StartupNotify=false

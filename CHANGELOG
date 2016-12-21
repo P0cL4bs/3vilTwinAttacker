@@ -1,3 +1,31 @@
+Version 0.8.3
+-------------
+- added new design main tool
+- added new column VendorMac in man Table
+- added set sorted in all Tablewidget
+- added new plugins options and description
+- added more options in statusbar main
+- fixed allow traffic to/from wlan (iptables)
+- added find file in directory cfg for check update
+- changed the all directory structure characters to lowercase
+- ffixed No such file or directory [logs] #102
+- fixed Error nmcli exceptions.OSError #104
+- added error messages more explained
+- added option to set Hostapd binary path (support hostapd-mana)
+- fixed improvements fuctions get_interfaces #109
+- added new plugin Responder (LLMNR, NBT-NS and MDNS poisoners)
+- fixed Redirect traffic from all domains in dnsspoof module
+- removed isc-dhcp-server(dhcpd) from dedependencies (optinal)
+- added check if interface wireless support AP/Mode
+- added python implements a DHCP Server by psychomario
+- fixed installer:install mitmproxy in ubuntu
+- added function: get possible errors from hostapd service
+- fixed get_file_cfg_Update: get update from github
+- fixed DNSServer: closes itself with this error #116
+- fixed report.py: check if module QtWebKit is installed #120
+- fixed removed Tool->Ettercap
+- added function for kill processes are keeping the interface busy #137
+
 Version 0.8.1
 -------------
 - re-design all GUI Menu->view

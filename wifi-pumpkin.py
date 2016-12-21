@@ -37,7 +37,7 @@ def checkAppQTDesigner(style):
         exit(-1)
 
 if __name__ == '__main__':
-    from Core.loaders.checker.check_depen import check_dep_pumpkin,RED,ENDC
+    from core.loaders.checker.check_depen import check_dep_pumpkin,RED,ENDC
     check_dep_pumpkin()
     from os import getuid
     if not getuid() == 0:
@@ -47,10 +47,10 @@ if __name__ == '__main__':
     main = QApplication(argv)
     checkAppQTDesigner(main.style().objectName())
 
-    from Core.Main import Initialize
+    from core.main import Initialize
     print('Loading GUI...')
     app = Initialize()
-    app.setWindowIcon(QIcon('Icons/icon.ico'))
+    app.setWindowIcon(QIcon('icons/icon.ico'))
     app.center()
     app.show()
 

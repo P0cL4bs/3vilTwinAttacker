@@ -16,7 +16,7 @@ func_Banner(){
 	echo '   ============================='
 	echo "   |$bldblu wifi-pumpkin Installer$txtrst|"
 	echo '   ============================='
-	echo "          Version: $(tput setaf 5)0.8.1 $txtrst"
+	echo "          Version: $(tput setaf 5)0.8.3 $txtrst"
 	echo "usage: ./installer.sh --install | --uninstall"
 }
 
@@ -54,75 +54,28 @@ func_install(){
 	apt-get install -y python-qt4 python-scapy hostapd rfkill
 	apt-get install -y python-dev git
 	apt-get install -y libpcap-dev
-    	pip install -r requirements.txt
-    	File="/etc/apt/sources.list"
-    	if  grep -q '#Wifi Pumpkin' $File;then
-	    cp /etc/apt/sources.list.backup /etc/apt/sources.list
-	    rm /etc/apt/sources.list.backup
-    	fi
+	pip install -r requirements.txt
 	echo "----------------------------------------"
 	echo "[=]$bldblu checking dependencies $txtrst "
 	func_check_install "hostapd"
-	func_check_install "dhcpd"
 	echo "----------------------------------------"
 	dist=$(tr -s ' \011' '\012' < /etc/issue | head -n 1)
 	check_arch=$(uname -m)
 	echo "[$green+$txtrst] Distribution Name: $dist"
-	if which dhcpd >/dev/null; then
-		echo ""
-	else
-		echo "[$green+$txtrst] dhcpd installer Distribution"
-		if [ "$dist" = "Ubuntu" ]; then
-			check_dhcp=$(program_is_installed dhcpd)
-			if [ $check_dhcp = 0 ]; then
-			    apt-get install libjpeg8-dev -y
-			    pip install mitmproxy==0.16
-                	    apt-get install isc-dhcp-server -y
-                            func_check_install "dhcpd"
-			fi
-		elif [ "$dist" = "Kali" ]; then
-			check_dhcp=$(program_is_installed dhcpd)
-			if [ $check_dhcp = 0 ]; then
-                cp /etc/apt/sources.list /etc/apt/sources.list.backup
-				File="/etc/apt/sources.list"
-                if ! grep -q 'deb http://ftp.de.debian.org/debian wheezy main' $File;then
-                    echo "deb http://ftp.de.debian.org/debian wheezy main" >> /etc/apt/sources.list
-                    apt-get update
-                    apt-get install isc-dhcp-server -y
-                    cp /etc/apt/sources.list.backup /etc/apt/sources.list
-                    rm /etc/apt/sources.list.backup
-                fi
-                check_dhcp=$(program_is_installed dhcpd)
-                if [ $check_dhcp = 0 ]; then
-                    if [ "$check_arch" = "i686" ]; then
-                        wget http://http.kali.org/kali/pool/main/i/isc-dhcp/isc-dhcp-server_4.3.1-6_i386.deb
-                        dpkg -i isc-dhcp-server_4.3.1-6_i386.deb
-                    elif [ "$check_arch" = "x86_64" ]; then
-                        wget http://http.kali.org/kali/pool/main/i/isc-dhcp/isc-dhcp-server_4.3.1-6_amd64.deb
-                        dpkg -i isc-dhcp-server_4.3.1-6_amd64.deb
-                    fi
-                    rm *.deb
-                fi
-                func_check_install "dhcpd"
-			fi
-		fi
-	fi
 	echo "----------------------------------------"
+    if [ "$dist" = "Ubuntu" ]; then
+        apt-get install libjpeg8-dev -y
+        pip install mitmproxy==0.16
+    fi
 	echo "[=] $bldblu Install WiFi-Pumpkin $txtrst"
-	if [ ! -d "$DIRECTORY" ]; then
-		mkdir $DIRECTORY
-		cp -r $path_install /usr/share/WiFi-Pumpkin/
-		bin_install
-		echo "[$green✔$txtrst] wifi-pumpkin installed with success"
-		echo "[$green✔$txtrst] execute $bldred sudo wifi-pumpkin$txtrst in terminal"
-	else
+	if [ -d "$DIRECTORY" ]; then
 		rm -r $DIRECTORY
-		mkdir $DIRECTORY
-		cp -r $path_install /usr/share/WiFi-Pumpkin/
-		bin_install
-		echo "[$green✔$txtrst] wifi-pumpkin installed with success"
-		echo "[$green✔$txtrst] execute $bldred sudo wifi-pumpkin$txtrst in terminal"
 	fi
+	mkdir $DIRECTORY
+	cp -r $path_install /usr/share/WiFi-Pumpkin/
+	bin_install
+	echo "[$green✔$txtrst] wifi-pumpkin installed with success"
+	echo "[$green✔$txtrst] execute $bldred sudo wifi-pumpkin$txtrst in terminal"
 	echo "[$green+$txtrst]$color_y P0cL4bs Team CopyRight 2015-2016$txtrst"
 	echo "[$green+$txtrst] Enjoy"
 	exit 0
@@ -130,8 +83,13 @@ func_install(){
 
 bin_install(){
     echo "[$green✔$txtrst] binary::/usr/bin/"
-    ln -sfT /usr/share/WiFi-Pumpkin/wifi-pumpkin /usr/bin/wifi-pumpkin
-    chmod +x /usr/bin/wifi-pumpkin
+    if which update-alternatives >/dev/null; then
+        update-alternatives --install /usr/bin/wifi-pumpkin wifi-pumpkin /usr/share/WiFi-Pumpkin/wifi-pumpkin 1 > /dev/null
+    else
+        ln -sfT /usr/share/WiFi-Pumpkin/wifi-pumpkin /usr/bin/wifi-pumpkin
+    fi
+    cp wifi-pumpkin.desktop /usr/share/applications/wifi-pumpkin.desktop
+    chmod +x /usr/share/WiFi-Pumpkin/wifi-pumpkin
 }
 
 uninstall(){
@@ -140,14 +98,17 @@ uninstall(){
 		exit 1
 	fi
 	if [  -d "$DIRECTORY" ]; then
-		echo "[$red_color-$txtrst] Delete Path:$bldwht $DIRECTORY $txtrst"
-		rm -r $path_uninstall
-		if [ -f "/usr/bin/wifi-pumpkin" ]; then
-			rm /usr/bin/wifi-pumpkin
-			echo "[$red_color-$txtrst] Deleted Binary:$bldwht/usr/bin/wifi-pumpkin $txtrst"
-		fi
+            if which update-alternatives >/dev/null; then
+                update-alternatives --remove wifi-pumpkin /usr/share/WiFi-Pumpkin/wifi-pumpkin > /dev/null
+            else
+                rm /usr/bin/wifi-pumpkin
+            fi
+            rm /usr/share/applications/wifi-pumpkin.desktop
+	    echo "[$red_color-$txtrst] Deleted Binary:$bldwht/usr/bin/wifi-pumpkin $txtrst"
+            echo "[$red_color-$txtrst] Delete Path:$bldwht $DIRECTORY $txtrst"
+	    rm -r $path_uninstall
 	else
-		echo "[$red_color✘$txtrst] wifi-pumpkin not Installed"
+	    echo "[$red_color✘$txtrst] wifi-pumpkin is not Installed"
 	fi
 }
 func_Banner

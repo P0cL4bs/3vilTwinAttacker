@@ -1,7 +1,6 @@
 Twisted
 scapy
 BeautifulSoup
-python-nmap
 netaddr
 config
 dnspython
