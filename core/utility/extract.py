@@ -41,7 +41,7 @@ def Beef_Hook_url(soup,hook_url):
             link_tag.parent.insert(link_tag_idx + 1, BeautifulSoup("<br>"))
             return soup
     except NameError:
-        print('[-] please. your need install the module python-BeautifulSoup')
+        print('[-] Please. You need to install the Module python-beautifulsoup')
 
 def get_network_scan():
     list_scan = []

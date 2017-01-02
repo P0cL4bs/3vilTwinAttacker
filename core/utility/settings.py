@@ -177,7 +177,7 @@ class SettingsTabGeneral(QVBoxLayout):
 class frm_Settings(QDialog):
     def __init__(self, parent = None):
         super(frm_Settings, self).__init__(parent)
-        self.setWindowTitle('WiFi-Pompkin - Settings')
+        self.setWindowTitle('Settings')
         self.Settings = SettingsINI('core/config/app/config.ini')
         self.loadtheme(self.XmlThemeSelected())
         self.setGeometry(0, 0, 420, 440)
@@ -242,14 +242,14 @@ class frm_Settings(QDialog):
         additem = menu.addAction('Add')
         editem = menu.addAction('Edit')
         removeitem = menu.addAction('Remove ')
-        clearitem = menu.addAction('clear')
+        clearitem = menu.addAction('Clear')
         action = menu.exec_(self.ListRules.viewport().mapToGlobal(pos))
         if action == removeitem:
             if item != []:
                 self.ListRules.takeItem(self.ListRules.currentRow())
         elif action == additem:
-            text, resp = QInputDialog.getText(self, 'Add rules iptables',
-            'Enter the rules iptables:')
+            text, resp = QInputDialog.getText(self, 'Add iptable rules',
+            'Enter the rules for iptables:')
             if resp:
                 try:
                     itemsexits = []
@@ -257,7 +257,7 @@ class frm_Settings(QDialog):
                         itemsexits.append(str(self.ListRules.item(index).text()))
                     for i in itemsexits:
                         if search(str(text),i):
-                            return QMessageBox.information(self,'Rules exist','this rules already exist!')
+                            return QMessageBox.information(self,'Rule exists','This rule already exists!')
                     item = QListWidgetItem()
                     item.setText(text)
                     item.setSizeHint(QSize(30,30))
@@ -265,8 +265,8 @@ class frm_Settings(QDialog):
                 except Exception as e:
                     return QMessageBox.information(self,'error',str(e))
         elif action == editem:
-            text, resp = QInputDialog.getText(self, 'Add rules for iptables',
-            'Enter the rules iptables:',text=self.ListRules.item(self.ListRules.currentRow()).text())
+            text, resp = QInputDialog.getText(self, 'Add iptable rules',
+            'Enter the rules for iptables:',text=self.ListRules.item(self.ListRules.currentRow()).text())
             if resp:
                 try:
                     itemsexits = []
@@ -274,7 +274,7 @@ class frm_Settings(QDialog):
                         itemsexits.append(str(self.ListRules.item(index).text()))
                     for i in itemsexits:
                         if search(str(text),i):
-                            return QMessageBox.information(self,'Rules exist','this rules already exist!')
+                            return QMessageBox.information(self,'Rule exist','This rule already exists!')
                     item = QListWidgetItem()
                     item.setText(text)
                     item.setSizeHint(QSize(30,30))
@@ -303,8 +303,8 @@ class frm_Settings(QDialog):
 
         self.tabcontrol.addTab(self.tab1, 'General')
         self.tabcontrol.addTab(self.tab2, 'Advanced')
-        self.tabcontrol.addTab(self.tab3,'Iptables')
-        self.tabcontrol.addTab(self.tab4,'Hostpad')
+        self.tabcontrol.addTab(self.tab3, 'iptables')
+        self.tabcontrol.addTab(self.tab4, 'hostpad')
 
         self.pageTab1 = SettingsTabGeneral(self.Settings)
         self.page_1.addLayout(self.pageTab1)
@@ -325,10 +325,9 @@ class frm_Settings(QDialog):
         self.scan1 = QRadioButton('Ping Scan:: Very fast IP scan')
         self.scan2 = QRadioButton('Python-Nmap:: Get hostname from IP')
         self.redirectport = QLineEdit(self)
-        self.check_interface_mode_AP = QCheckBox('Check if interface supports AP/Mode')
+        self.check_interface_mode_AP = QCheckBox('Check if interface supports Monitor Mode')
         self.check_interface_mode_AP.setChecked(self.Settings.get_setting('accesspoint','check_support_ap_mode',format=bool))
-        self.check_interface_mode_AP.setToolTip('if you disable this options in next time, the interface is not should '
-        'checked if has support AP mode.')
+        self.check_interface_mode_AP.setToolTip('If you disable this option, Monitor Mode support will not be checked.')
 
         # page Iptables
         self.ListRules = QListWidget(self)
@@ -373,11 +372,9 @@ class frm_Settings(QDialog):
         self.page_2.addRow(self.groupAdvanced)
 
         #add tab iptables
-        self.page_3.addWidget(QLabel('Iptables:'))
         self.page_3.addRow(self.ListRules)
 
         #add tab hostpad
-        self.page_4.addWidget(QLabel('settings hostapd:'))
         self.page_4.addRow(self.ListHostapd)
 
         self.form.addRow(self.tabcontrol)

@@ -126,7 +126,7 @@ class Initialize(QMainWindow):
         for i in iwconfig.stdout.readlines():
             if search('Mode:Monitor',i):
                 self.reply = QMessageBox.question(self,
-                'About Exit','Are you sure to quit?', QMessageBox.Yes |
+                'About Exit','Are you sure you want to quit?', QMessageBox.Yes |
                 QMessageBox.No, QMessageBox.No)
                 if self.reply == QMessageBox.Yes:
                     set_monitor_mode(i.split()[0]).setDisable()
@@ -136,7 +136,7 @@ class Initialize(QMainWindow):
         # check is Rouge AP is running
         if self.form_widget.Apthreads['RougeAP'] != []:
             self.reply = QMessageBox.question(self,
-            'About Access Point','Are you sure to stop all threads AP ?', QMessageBox.Yes |
+            'About Access Point','Are you sure you want to stop all Access Points?', QMessageBox.Yes |
             QMessageBox.No, QMessageBox.No)
             if self.reply == QMessageBox.Yes:
                 print('killing all threads...')
@@ -314,8 +314,8 @@ class WifiPumpkin(QWidget):
     def get_status_new_commits(self,flag):
         ''' checks for commits in repository on Github '''
         if flag and self.UpdateSoftware.checkHasCommits:
-            reply = QMessageBox.question(self, 'Update WiFi-Pumpkin',
-                'would you like to update commits from (github)??', QMessageBox.Yes |
+            reply = QMessageBox.question(self, 'Update',
+                'Would you like to update from GitHub?', QMessageBox.Yes |
                 QMessageBox.No, QMessageBox.No)
             if reply == QMessageBox.Yes:
                 self.UpdateSoftware.show()
@@ -432,7 +432,7 @@ class WifiPumpkin(QWidget):
         self.btnHttpServer = QToolButton(self)
         self.btnHttpServer.setFixedHeight(25)
         self.btnHttpServer.setIcon(QIcon('icons/phishing.png'))
-        self.btnHttpServer.setToolTip('HTTP Server settings')
+        self.btnHttpServer.setToolTip('HTTP Server Settings')
         self.FormPopup = PopUpServer(self.FSettings)
         self.btnHttpServer.setPopupMode(QToolButton.MenuButtonPopup)
         self.btnHttpServer.setMenu(QMenu(self.btnHttpServer))
@@ -513,7 +513,7 @@ class WifiPumpkin(QWidget):
 
         self.donatelink = 'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=PUPJEGHLJPFQL'
         self.donateLabel = ServiceNotify('Donations allow us to devote more time to the project so'
-        ' if you are able to donate any amount. click ',title='Attention',
+        ' if you are able to donate any amount, click ',title='Attention',
         link=self.donatelink,timeout=15000)
         # set main page Tool
         self.widget = QWidget()
@@ -572,12 +572,12 @@ class WifiPumpkin(QWidget):
 
         #menu module
         Menu_module = self.myQMenuBar.addMenu('&Modules')
-        btn_deauth = QAction('Wi-Fi deauthentication', self)
-        btn_probe = QAction('Wi-Fi Probe Request',self)
+        btn_deauth = QAction('Deauth Attack', self)
+        btn_probe = QAction('Probe Request',self)
         btn_dhcpStar = QAction('DHCP Starvation',self)
         btn_winup = QAction('Windows Update',self)
-        btn_arp = QAction('ARP Poisoner ',self)
-        btn_dns = QAction('DNS Spoofer ',self)
+        btn_arp = QAction('ARP Poison Attack',self)
+        btn_dns = QAction('DNS Spoof Attack',self)
         btn_phishing = QAction('Phishing Manager',self)
         action_settings = QAction('Settings',self)
 
@@ -625,7 +625,7 @@ class WifiPumpkin(QWidget):
         Menu_extra= self.myQMenuBar.addMenu('&Help')
         Menu_update = QAction('Check for Updates',self)
         Menu_about = QAction('About WiFi-Pumpkin',self)
-        Menu_issue = QAction('Submit issue',self)
+        Menu_issue = QAction('Submit Issue',self)
         Menu_donate = QAction('Donate',self)
         Menu_about.setIcon(QIcon('icons/about.png'))
         Menu_issue.setIcon(QIcon('icons/report.png'))
@@ -661,7 +661,7 @@ class WifiPumpkin(QWidget):
             self.Farp_posion = GUIModules.frm_Arp_Poison(self.FormPopup.Ftemplates)
             self.Farp_posion.setGeometry(0, 0, 450, 300)
             return self.Farp_posion.show()
-        QMessageBox.information(self,'ARP Poison Attack','this module not work with AP mode enabled. ')
+        QMessageBox.information(self,'ARP Poison Attack','This module does not work with the Access Point enabled. ')
 
     def show_update(self):
         ''' call GUI software Update '''
@@ -705,10 +705,9 @@ class WifiPumpkin(QWidget):
         ''' call GUI DnsSpoof module '''
         if  self.FSettings.Settings.get_setting('accesspoint','statusAP',format=bool):
             if self.PopUpPlugins.GroupPluginsProxy.isChecked():
-                return QMessageBox.information(self,'DnsSpoof with AP','if you want to use the module'
-                ' Dns Spoof Attack with AP started, you need to disable Proxy Server. You can change this in plugins tab'
-                ' and only it necessary that the option "Enable Proxy Server"  be unmarked and '
-                'restart the AP(Access Point).')
+                return QMessageBox.information(self,'DNS Spoof with AP','If you want to use this module'
+                ' with the Access Point started, you need to disable the Proxy Server. You can change this in plugins tab.'
+                ' It\'s only necessary to uncheck "Enable Proxy Server" and restart the Access Point.')
         self.Fdns = GUIModules.frm_DnsSpoof(self.FormPopup.Ftemplates)
         self.Fdns.setGeometry(QRect(100, 100, 450, 500))
         self.Fdns.show()
@@ -734,7 +733,7 @@ class WifiPumpkin(QWidget):
     def logdns2proxy(self):
         ''' call GUI dns2proxy monitor logger '''
         self.Fdns2proxy = GUIModules.frm_dns2proxy()
-        self.Fdns2proxy.setWindowTitle('Dns2proxy Logger')
+        self.Fdns2proxy.setWindowTitle('DNS2Proxy Logger')
         self.Fdns2proxy.show()
 
     def CheckStatusWPASecurity(self):
@@ -891,9 +890,9 @@ class WifiPumpkin(QWidget):
     def GetErrorhostapdServices(self,data):
         '''check error hostapd on mount AP '''
         self.Stop_PumpAP()
-        return QMessageBox.warning(self,'[ERROR] Hostpad',
-        'Failed to initiate Access Point, '
-        'check output process hostapd.\n\nOutput::\n{}'.format(data))
+        return QMessageBox.warning(self,'[ERROR] Hostapd',
+        'Failed to initiate Access Point. '
+        'Please check the output of hostapd.\n\nOutput::\n{}'.format(data))
 
     def mConfigure(self):
         ''' settings edits default and check tools '''
@@ -985,7 +984,7 @@ class WifiPumpkin(QWidget):
         Refactor.set_ip_forward(0)
         self.TabInfoAP.clearContents()
         self.THeaders  = OrderedDict([ ('Devices',[]), # restore headers table widet
-        ('Mac Address',[]),('IP Address',[]),('Vendors',[])])
+        ('MAC Address',[]),('IP Address',[]),('Vendors',[])])
         if hasattr(self.FormPopup,'Ftemplates'):
             self.FormPopup.Ftemplates.killThread()
             self.FormPopup.StatusServer(False)
@@ -1006,7 +1005,7 @@ class WifiPumpkin(QWidget):
         content = Refactor.exportHtml()
         if listdir('logs')!= '':
             resp = QMessageBox.question(self, 'About Delete Logger',
-                'do you want to delete logs?',QMessageBox.Yes |
+                'Do you want to delete all logs?',QMessageBox.Yes |
                     QMessageBox.No, QMessageBox.No)
             if resp == QMessageBox.Yes:
                 Popen(['rm','logs/Caplog/*.cap'], stdout=PIPE,shell=False,stderr=PIPE)
@@ -1014,8 +1013,7 @@ class WifiPumpkin(QWidget):
                     with open(keyFile,'w') as f:
                         f.write(''),f.close()
                 self.FSettings.Settings.set_setting('accesspoint','sessions',dumps({}))
-                QMessageBox.information(self,'Logger','All Looger::Output has been Removed...')
-
+                QMessageBox.information(self,'Logger','All Logger::Output has been removed...')
 
     def start_dift(self):
         ''' start tool driftnet in Thread '''
@@ -1028,9 +1026,9 @@ class WifiPumpkin(QWidget):
                     self.Apthreads['RougeAP'].append(Thread_driftnet)
                     return Thread_driftnet.start()
                 return QMessageBox.information(self,'Accesspoint is not running',
-                'The access point is not configured, this option require AP is running...')
+                'The Access Point is not configured, this option requires a running AP...')
             return QMessageBox.information(self,'xterm','xterm is not installed.')
-        return QMessageBox.information(self,'driftnet','driftnet is not found.')
+        return QMessageBox.information(self,'driftnet','driftnet is not installed.')
 
     def CoreSettings(self):
         ''' configure interface and dhcpd for mount Access Point '''
@@ -1107,10 +1105,10 @@ class WifiPumpkin(QWidget):
         ''' check if Hostapd, isc-dhcp-server is installed '''
         self.hostapd_path = self.FSettings.Settings.get_setting('accesspoint','hostapd_path')
         if not path.isfile(self.hostapd_path):
-            return QMessageBox.information(self,'Error Hostapd','hostapd is not installed')
+            return QMessageBox.information(self,'hostapd','hostapd is not installed')
         if self.FSettings.Settings.get_setting('accesspoint','dhcpd_server',format=bool):
             if not self.ConfigTwin['ProgCheck'][3]:
-                return QMessageBox.warning(self,'Error dhcpd','isc-dhcp-server (dhcpd) is not installed')
+                return QMessageBox.warning(self,'dhcpd','isc-dhcp-server (dhcpd) is not installed')
         return True
 
     def checkWirelessSecurity(self):
@@ -1133,53 +1131,50 @@ class WifiPumpkin(QWidget):
     def Start_PumpAP(self):
         ''' start Access Point and settings plugins  '''
         if len(self.selectCard.currentText()) == 0:
-            return QMessageBox.warning(self,'Error interface ','Network interface is not found')
+            return QMessageBox.warning(self,'Interface ','Network interface was not found')
         if not type(self.SoftDependencies()) is bool: return
 
         # check if interface has been support AP mode (necessary for hostapd)
         if self.FSettings.Settings.get_setting('accesspoint','check_support_ap_mode',format=bool):
             if not 'AP' in Refactor.get_supported_interface(self.selectCard.currentText())['Supported']:
-                return QMessageBox.warning(self,'No Network Supported failed',
-                "<strong>failed AP mode: warning interface </strong>, the feature "
-                "Access Point Mode is Not Supported By This Device -><strong>({})</strong>.<br><br>"
-                "Your adapter does not support for create Access Point Network."
+                return QMessageBox.warning(self,'Access Point',
+                "<strong>Warning: </strong>, Monitor Mode is not supported by this device -><strong>({})</strong>."
+                "Your adapter does not support creating Access Points."
                 " ".format(self.selectCard.currentText()))
 
         # check connection with internet
         self.interfacesLink = Refactor.get_interfaces()
         if len(self.EditGateway.text()) == 0 or self.interfacesLink['activated'][0] == None:
-            return QMessageBox.warning(self,'Internet Connection','No internet connection not found, '
-            'sorry WiFi-Pumpkin tool requires an internet connection to mount MITM attack. '
-            'check your connection and try again')
+            return QMessageBox.warning(self,'Internet Connection','No Internet Connection was found.'
+            'Sorry, WiFi-Pumpkin requires an Internet Connection to execute MITM attacks.'
+            'Check your connection and try again.')
 
         # check if Wireless interface is being used
         if str(self.selectCard.currentText()) == self.interfacesLink['activated'][0]:
             iwconfig = Popen(['iwconfig'], stdout=PIPE,shell=False,stderr=PIPE)
             for line in iwconfig.stdout.readlines():
                 if str(self.selectCard.currentText()) in line:
-                    return QMessageBox.warning(self,'Wireless interface is busy',
-                    'Connection has been detected, this {} is joined the correct Wi-Fi network'
-                    ' : Device or resource busy\n{}\nYou may need to another Wi-Fi USB Adapter'
-                    ' for create AP or try use with local connetion(Ethernet).'.format(
+                    return QMessageBox.warning(self,'Wireless Interface',
+                    'A connection has been detected! You may need to use another Wi-Fi Adapter'
+                    ' for creating an Access Point or you need to use Ethernet to connect yourself to the Internet'.format(
                     str(self.selectCard.currentText()),line))
 
         # check if kali linux is using wireless interface for share internet
         if  self.interfacesLink['activated'][1] == 'wireless' and dist()[0] == 'Kali':
             return QMessageBox.information(self,'Network Information',
-            "The Kali Linux don't have support to use with 2 wireless"
-            "(1 for connected internet/2 for WiFi-Pumpkin AP)."
-            " because does not exclude correctly "
-            "adapter in '/etc/NetworkManager/NetworkManager.conf'.\n\n"
-            "( if you have any solution for this send me feedback ).")
+            "Kali Linux doesn't have support for 2 WiFi Adapters or more"
+            "because it doesn't exclude the adapter correctly"
+            "in '/etc/NetworkManager/NetworkManager.conf'.\n\n"
+            "(if you have any solution for this send me feedback)")
 
         # check if range ip class is same
         dh, gateway = self.PumpSettingsTAB.getPumpkinSettings()['router'],str(self.EditGateway.text())
         if dh[:len(dh)-len(dh.split('.').pop())] == gateway[:len(gateway)-len(gateway.split('.').pop())]:
-            return QMessageBox.warning(self,'DHCP Server settings',
-                'The DHCP server check if range ip class is same.'
-                'it works, but not share internet connection in some case.\n'
-                'for fix this, You need change on tab (settings -> Class Ranges)'
-                'now you have choose the Class range different of your network.')
+            return QMessageBox.warning(self,'DHCP Server Settings',
+                'The DHCP Server checks if the Access Point tries to use the same address.'
+                'as the network you are connected to. It would work, but does not share the'
+                'Internet in some cases. To fix this, you need to change the used address range'
+                'in Settings->DHCP Settings->Class Ranges')
 
         print('\n[*] Loading debugging mode')
         # create session ID to logging process
@@ -1208,7 +1203,7 @@ class WifiPumpkin(QWidget):
             # exclude USB wireless adapter in file NetworkManager
             if not Refactor.settingsNetworkManager(self.ConfigTwin['AP_iface'],Remove=False):
                 return QMessageBox.warning(self,'Network Manager',
-                'Not found file NetworkManager.conf in folder /etc/NetworkManager/')
+                'The file /etc/NetworkManager/NetworkManager.conf was not found')
 
         # create dhcpd.leases and set permission for acesss DHCPD
         leases = '/var/lib/dhcp/dhcpd.leases'

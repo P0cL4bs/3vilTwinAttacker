@@ -30,7 +30,7 @@ class frm_githubUpdate(PumpkinModule):
     ''' called update from github repository master'''
     def __init__(self,version,parent = None):
         super(frm_githubUpdate, self).__init__(parent)
-        self.setWindowTitle("WiFi-Pumpkin Software Update")
+        self.setWindowTitle("Software Update")
         self.loadtheme(self.configure.XmlThemeSelected())
         self.checkHasCommits = False
         self.version = version
@@ -54,7 +54,7 @@ class frm_githubUpdate(PumpkinModule):
         self.LVersion   = QLabel(self.version)
         self.pb         = ProgressBarWid(total=101)
         self.btnUpdate  = QPushButton('Install')
-        self.btnCheck   = QPushButton('Check Updates')
+        self.btnCheck   = QPushButton('Check for Updates')
         self.LCommits   = QListWidget(self)
         self.LOutput    = QListWidget(self)
         self.LCommits.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -138,7 +138,7 @@ class frm_githubUpdate(PumpkinModule):
             item.setSizeHint(QSize(20,20))
             self.LCommits.addItem(item)
             return self.btnCheck.setEnabled(True)
-        elif 'New version available WiFi-Pumpkin v' in commits:
+        elif 'New Version available: WiFi-Pumpkin v' in commits:
             reply = QMessageBox.question(self, 'Update Information',
                 '{}, would you like to update??'.format(commits), QMessageBox.Yes |
                 QMessageBox.No, QMessageBox.No)

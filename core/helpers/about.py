@@ -24,9 +24,9 @@ class ChangeLog(QTextEdit):
         self.setReadOnly(True)
 
 
-class SettingsTranks(QVBoxLayout):
+class SettingsThanks(QVBoxLayout):
     def __init__(self,parent = None):
-        super(SettingsTranks, self).__init__(parent)
+        super(SettingsThanks, self).__init__(parent)
         self.mainLayout    = QFormLayout()
         self.scrollwidget = QWidget()
         self.scrollwidget.setLayout(self.mainLayout)
@@ -42,7 +42,7 @@ class SettingsTranks(QVBoxLayout):
         self.formMode.addRow(QLabel('<a href="https://github.com/psychomario"><strong>@psychomario</strong></a>'))
         self.formMode.addRow(QLabel('<a href="https://github.com/psychomario/PyPXE">PyPXE</a> class implements a DHCP Server<br>'))
         self.formMode.addRow(QLabel('<a href="https://github.com/xtr4nge"><strong>@xtr4nge</strong></a>'))
-        self.formMode.addRow(QLabel('PLugin <a href="https://github.com/xtr4nge/sslstrip">Sslstrip</a> fork inject code<br>'))
+        self.formMode.addRow(QLabel('Plugin <a href="https://github.com/xtr4nge/sslstrip">Sslstrip</a> fork inject code<br>'))
         self.formMode.addRow(QLabel('<a href="https://github.com/LeonardoNve"><strong>@LeonardoNve</strong></a>'))
         self.formMode.addRow(QLabel('Plugin <a href="https://github.com/LeonardoNve/sslstrip2">SSLstrip2</a> version fork'))
         self.formMode.addRow(QLabel('Plugin <a href="https://github.com/LeonardoNve/dns2proxy">Dns2proxy</a> Offensive DNS server <br>'))
@@ -97,7 +97,7 @@ class frmAbout(PumpkinModule):
         self.tabwid = QTabWidget(self)
         self.TabAbout = QWidget(self)
         self.TabVersion = QWidget(self)
-        self.TabTranks  = QWidget(self)
+        self.TabThanks  = QWidget(self)
         self.TabChangelog = QWidget(self)
         self.TabDonate   = QWidget(self)
         self.btn_exit = QPushButton("Close")
@@ -107,7 +107,7 @@ class frmAbout(PumpkinModule):
 
         self.formAbout = QFormLayout()
         self.formVersion = QFormLayout()
-        self.formTranks = QFormLayout()
+        self.formThanks = QFormLayout()
         self.formChange = QFormLayout()
         self.formDonate = QFormLayout()
 
@@ -119,7 +119,7 @@ class frmAbout(PumpkinModule):
         self.formAbout.addRow(QLabel(self.emails[0]))
         self.formAbout.addRow(QLabel(self.emails[1]+'<br>'))
         self.formAbout.addRow(QLabel('Copyright 2015-2016, '+self.author[:-14]))
-        self.gnu = QLabel('<a href="link">License: GNU General Public License Version</a><br>')
+        self.gnu = QLabel('<a href="link">License: GNU General Public License Version 3</a><br>')
         self.gnu.linkActivated.connect(self.link)
         self.formAbout.addRow(self.gnu)
         self.formAbout.addRow(QLabel('<center>{}</center>'.format(self.author[-14:])))
@@ -151,10 +151,10 @@ class frmAbout(PumpkinModule):
         </ul>'''.format(QT_VERSION_STR,python_version)))
         self.TabVersion.setLayout(self.formVersion)
 
-        # Tranks Section
-        self.TabpageTranks = QVBoxLayout(self.TabTranks)
-        self.formTE = SettingsTranks()
-        self.TabpageTranks.addLayout(self.formTE)
+        # Thanks Section
+        self.TabpageThanks = QVBoxLayout(self.TabThanks)
+        self.formTE = SettingsThanks()
+        self.TabpageThanks.addLayout(self.formTE)
 
         # Changelog Section
         self.formChange.addRow(ChangeLog())
@@ -163,8 +163,8 @@ class frmAbout(PumpkinModule):
         # self.form.addRow(self.btn_exit)
         self.tabwid.addTab(self.TabAbout,'About')
         self.tabwid.addTab(self.TabVersion,'Version')
-        self.tabwid.addTab(self.TabChangelog,'ChangeLog')
-        self.tabwid.addTab(self.TabTranks,'TranksTo')
+        self.tabwid.addTab(self.TabChangelog,'Changelog')
+        self.tabwid.addTab(self.TabThanks,'Thanks to')
         self.tabwid.addTab(self.TabDonate, 'Donate')
         self.form.addRow(self.tabwid)
         self.form2.addSpacing(240)

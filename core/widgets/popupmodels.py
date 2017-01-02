@@ -311,7 +311,7 @@ class PopUpServer(QWidget):
         self.GroupBox.setLayout(self.FormLayout)
         self.btntemplates       = QPushButton('Phishing M.')
         self.btnStopServer      = QPushButton('Stop Server')
-        self.btnRefresh         = QPushButton('ReFresh')
+        self.btnRefresh         = QPushButton('Refresh')
         self.txt_IP             = QLineEdit(self)
         self.ComboIface         = QComboBox(self)
         self.txt_IP.setVisible(False)

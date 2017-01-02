@@ -131,7 +131,7 @@ class ThreadScan(QThread):
                     except :
                         pass
         except NameError:
-            QMessageBox.information(self,'error module','the module Python-nmap not installed')
+            QMessageBox.information(self,'Missing Module','The module python-nmap is not installed')
 
 class ThreadFastScanIP(QThread):
     sendDictResultscan = pyqtSignal(object)
@@ -163,7 +163,7 @@ class ThreadFastScanIP(QThread):
             stdout=limbo, stderr=limbo).wait()
             if not result:
                 if Refactor.get_mac(ip) == None:
-                    lista[ip] = ip + '|' + 'not found'
+                    lista[ip] = ip + '|' + 'Not found'
                 else:
                     lista[ip] = ip + '|' + Refactor.get_mac(ip)
     def stop(self):

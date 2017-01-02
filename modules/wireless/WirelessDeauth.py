@@ -47,7 +47,7 @@ class frm_deauth(PumpkinModule):
                 event.accept()
                 for i in threadloading['deauth']:
                     i.terminate()
-                    print("[*] Deuath Thread Terminate")
+                    print("[*] Deuath Thread Terminated")
                 for i in threadloading['mdk3']:
                     i.stop(),i.join()
                 self.deleteLater()
@@ -231,7 +231,7 @@ class frm_deauth(PumpkinModule):
         self.ApsCaptured    = {}
         self.data = {'Bssid':[], 'Essid':[], 'Channel':[]}
         if self.get_placa.currentText() == "":
-            QMessageBox.information(self, "Network Adapter", 'Network Adapter is not found. Try again.')
+            QMessageBox.information(self, "Network Adapter", 'Network Adapter not found. Try again.')
         else:
             self.interface = str(set_monitor_mode(self.get_placa.currentText()).setEnable())
             self.btn_scan_stop.setEnabled(True)
@@ -248,7 +248,7 @@ class frm_deauth(PumpkinModule):
                         self.thread_airodump.daemon = True
                         self.thread_airodump.start()
                     else:
-                        QMessageBox.information(self,'Error airodump','airodump-ng is not installed')
+                        QMessageBox.information(self,'airodump-ng','airodump-ng is not installed')
                         set_monitor_mode(self.get_placa.currentText()).setDisable()
 
 
@@ -256,10 +256,10 @@ class frm_deauth(PumpkinModule):
         global threadloading
         if hasattr(self,'threadScanAP'):
             if not self.threadScanAP.stopped:
-                return QMessageBox.warning(self,'scanner','you need to stop the scanner Access Point')
+                return QMessageBox.warning(self,'scanner','You need to stop the Access Point')
         if hasattr(self,'thread_airodump'):
             if self.thread_airodump.isAlive():
-                return QMessageBox.warning(self,'scanner','you need to stop the scanner Access Point')
+                return QMessageBox.warning(self,'scanner','You need to stop the Access Point')
         if self.linetarget.text() == '':
             return QMessageBox.warning(self, 'Target Error', 'Please select a target to attack')
         # get args for thread attack
@@ -286,7 +286,7 @@ class frm_deauth(PumpkinModule):
                 self.processmdk.setObjectName('Thread::mdk3')
                 threadloading['mdk3'].append(self.processmdk)
                 return self.processmdk.start()
-            QMessageBox.information(self,'Error mdk3','mkd3 not installed')
+            QMessageBox.information(self,'mdk3','mdk3 not installed')
             set_monitor_mode(self.get_placa.currentText()).setDisable()
 
     def AttackStatus(self,bool):
@@ -307,5 +307,5 @@ class frm_deauth(PumpkinModule):
                 if Refactor.check_is_mac(i.replace(' ', '')):
                     self.linetarget.setText(str(i))
             if self.linetarget.text() == '':
-                QMessageBox.information(self, 'MacAddress',
+                QMessageBox.information(self, 'MAC Address',
                 'Please select a valid MAC Address as target.')

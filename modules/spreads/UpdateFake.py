@@ -37,7 +37,7 @@ class frm_update_attack(PumpkinModule):
         self.GUI()
 
     def closeEvent(self, event):
-        reply = QMessageBox.question(self, 'About Exit',"Are you sure that you want to quit?", QMessageBox.Yes |
+        reply = QMessageBox.question(self, 'Exit',"Are you sure you want to quit?", QMessageBox.Yes |
             QMessageBox.No, QMessageBox.No)
         if reply == QMessageBox.Yes:
             event.accept()
@@ -189,7 +189,7 @@ class frm_update_attack(PumpkinModule):
         confFile.close()
         ip = Refactor.get_Ipaddr(str(self.cb_interface.currentText()))
         if ip == None:
-            return QMessageBox.warning(self, 'Ip not found',
+            return QMessageBox.warning(self, 'IP not found',
             'The IP Address was not found on the selected Network Adapter.')
         self.btn_start_server.setEnabled(False)
         self.btn_stop.setEnabled(True)
@@ -197,7 +197,7 @@ class frm_update_attack(PumpkinModule):
 
     def server_start(self):
         if len(self.path.text()) <= 0:
-            return QMessageBox.information(self, 'Path file Error', 'Error in get the file path.')
+            return QMessageBox.information(self, 'Path Error', 'Error in the file path.')
         if self.rb_windows.isChecked():
             return self.SettingsPage('templates/Update/Settings_WinUpdate.html',
             'templates/Update/Windows_Update/','windows-update.exe',True)
@@ -205,7 +205,7 @@ class frm_update_attack(PumpkinModule):
             return self.SettingsPage('templates/Update/Settings_java.html',
             'templates/Update/Java_Update/','java-update.exe',False)
 
-        return QMessageBox.information(self, 'Phishing settings', 'Please select an option in the Phishing page:')
+        return QMessageBox.information(self, 'Phishing Settings', 'Please select an option in the Phishing page:')
 
     def threadServer(self,directory,ip):
         global threadloading

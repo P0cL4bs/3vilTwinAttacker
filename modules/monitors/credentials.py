@@ -27,7 +27,7 @@ class frm_get_credentials(PumpkinModule):
             self.thread.append(dns)
             dns.start()
             return
-        QMessageBox.warning(self,'error Phishing logger','Phishing::capture no logger found')
+        QMessageBox.warning(self,'Phishing Logger','Phishing::capture no logger found')
 
 
     def loggerdns(self,data):

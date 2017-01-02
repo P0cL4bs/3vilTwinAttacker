@@ -45,8 +45,8 @@ class frm_DnsSpoof(PumpkinModule):
         self.GUI()
 
     def closeEvent(self, event):
-        reply = QMessageBox.question(self, 'DNS spoofer',
-            'Are you sure that you want to close Dns spoof?', QMessageBox.Yes |
+        reply = QMessageBox.question(self, 'DNS Spoofer',
+            'Are you sure you want to close the DNS Spoofer?', QMessageBox.Yes |
             QMessageBox.No, QMessageBox.No)
         if reply == QMessageBox.Yes:
             event.accept()
@@ -145,7 +145,7 @@ class frm_DnsSpoof(PumpkinModule):
 
         # button conf
         self.btn_start_scanner = QPushButton('Start Scan  ')
-        self.btn_stop_scanner = QPushButton('Stop Scan    ')
+        self.btn_stop_scanner = QPushButton('Stop Scan   ')
         self.btn_Attack_Posion = QPushButton('Start Attack')
         self.btn_Stop_Posion = QPushButton('Stop Attack')
         self.btn_server = QPushButton('Phishing M.')
@@ -232,13 +232,13 @@ class frm_DnsSpoof(PumpkinModule):
         menu = QMenu()
         additem = menu.addAction('Add Host')
         removeitem = menu.addAction('Remove Host')
-        clearitem = menu.addAction('Clear All')
+        clearitem = menu.addAction('Clear all')
         action = menu.exec_(self.myListDns.viewport().mapToGlobal(pos))
         if action == removeitem:
             if item != []:
                 self.myListDns.takeItem(self.myListDns.currentRow())
         elif action == additem:
-            text, resp = QInputDialog.getText(self, 'Add DNS',
+            text, resp = QInputDialog.getText(self, 'Add Host',
             'Enter the Host to spoof: (ex.: example2.com)')
             if resp:
                 try:
@@ -247,7 +247,7 @@ class frm_DnsSpoof(PumpkinModule):
                         itemsexits.append(str(self.myListDns.item(index).text()))
                     for i in itemsexits:
                         if search(str(text),i):
-                            QMessageBox.information(self,'Dns Rsolver','This Host already exists on the List')
+                            QMessageBox.information(self,'DNS Resolver','This Host already exists on the List')
                             return
                     item = QListWidgetItem()
                     item.setIcon(QIcon('icons/dnsspoof.png'))
@@ -345,7 +345,7 @@ class frm_DnsSpoof(PumpkinModule):
         self.myDNsoutput.clear()
         if not self.configure.Settings.get_setting('accesspoint','statusAP',format=bool):
             if (len(self.txt_target.text()) and  len(self.txt_gateway.text())) == 0:
-                return QMessageBox.warning(self, 'Error Dnsspoof', 'you need set the input correctly')
+                return QMessageBox.warning(self, 'DNS Spoofer', 'You need to set the input correctly')
             if (len(self.txt_target.text()) and len(self.txt_gateway.text())) and len(self.txt_redirect.text()) != 0:
                 Refactor.set_ip_forward(1)
 
@@ -389,7 +389,7 @@ class frm_DnsSpoof(PumpkinModule):
             for key in reversed(self.data.keys()):
                 Headers.append(key)
             return self.tables.setHorizontalHeaderLabels(Headers)
-        return QMessageBox.information(self,'Error in gateway','gateway not found.')
+        return QMessageBox.information(self,'Gateway','Gateway not found.')
 
     def get_outputDNSspoof(self,data):
         self.myDNsoutput.addItem(data)

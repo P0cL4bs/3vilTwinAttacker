@@ -35,7 +35,7 @@ class frm_NetCredsLogger(PumpkinModule):
             self.thread.append(urls)
             urls.start()
         if not urls.isRunning():
-            QMessageBox.warning(self,'error logger read','netcreds no logger found.')
+            QMessageBox.warning(self,'NetCreds Logger','netcreds no logger found.')
 
     def loggercreds(self,data):
         self.list_creds.addItem(data)
