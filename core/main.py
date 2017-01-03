@@ -474,21 +474,28 @@ class WifiPumpkin(QWidget):
         self.GroupApPassphrase.clicked.connect(self.CheckStatusWPASecurity)
         self.layoutNetworkPass  = QFormLayout()
         self.editPasswordAP     = QLineEdit(self.FSettings.Settings.get_setting('accesspoint','WPA_SharedKey'))
-        self.WPAtype_spinbox    = QSpinBox()
+        self.WPA_bg             = QButtonGroup()
+        self.WPA_rb             = QRadioButton('WPA')
+        self.WPA2_rb            = QRadioButton('WPA2')
         self.wpa_pairwiseCB     = QComboBox()
         algoritms = ['TKIP','CCMP','TKIP + CCMP']
         wpa_algotims = self.FSettings.Settings.get_setting('accesspoint','WPA_Algorithms')
         self.wpa_pairwiseCB.addItems(algoritms)
         self.wpa_pairwiseCB.setCurrentIndex(algoritms.index(wpa_algotims))
-        self.WPAtype_spinbox.setMaximum(2)
-        self.WPAtype_spinbox.setMinimum(1)
-        self.WPAtype_spinbox.setValue(
-            self.FSettings.Settings.get_setting('accesspoint','WPA_type',format=int))
+        if self.FSettings.Settings.get_setting('accesspoint','WPA_type',format=int) == 1:
+            self.WPA_rb.setChecked(True)
+            self.WPA2_rb.setChecked(False)
+        if self.FSettings.Settings.get_setting('accesspoint', 'WPA_type', format=int) == 2:
+            self.WPA_rb.setChecked(False)
+            self.WPA2_rb.setChecked(True)
+
+        QButtonGroup.addButton(self.WPA_bg, self.WPA_rb)
+        QButtonGroup.addButton(self.WPA_bg, self.WPA2_rb)
         self.editPasswordAP.setFixedWidth(150)
 
         # add widgets on layout Group
         self.layoutNetworkPass.addRow(QLabel('Settings WPA/IEEE 802.11i'))
-        self.layoutNetworkPass.addRow('Security WPA type:',self.WPAtype_spinbox)
+        self.layoutNetworkPass.addRow(self.WPA_rb, self.WPA2_rb)
         self.layoutNetworkPass.addRow('WPA Algorithms:',self.wpa_pairwiseCB)
         self.layoutNetworkPass.addRow('WPA Shared Key:',self.editPasswordAP)
         self.GroupApPassphrase.setLayout(self.layoutNetworkPass)
@@ -994,7 +1001,8 @@ class WifiPumpkin(QWidget):
         self.selectCard.setEnabled(True)
         self.EditChannel.setEnabled(True)
         self.editPasswordAP.setEnabled(True)
-        self.WPAtype_spinbox.setEnabled(True)
+        self.WPA_rb.setEnabled(True)
+        self.WPA2_rb.setEnabled(True)
         self.wpa_pairwiseCB.setEnabled(True)
         self.PumpSettingsTAB.GroupDHCP.setEnabled(True)
         self.PopUpPlugins.tableplugins.setEnabled(True)
@@ -1113,11 +1121,17 @@ class WifiPumpkin(QWidget):
                 return QMessageBox.warning(self,'Error dhcpd','isc-dhcp-server (dhcpd) is not installed')
         return True
 
+    def getWPAType(self):
+        if self.WPA_rb.isChecked():
+            return 1
+        if self.WPA2_rb.isChecked():
+            return 2
+
     def checkWirelessSecurity(self):
         '''check if user add security password on AP'''
         if self.GroupApPassphrase.isChecked() and len(self.editPasswordAP.text()) != 0:
             self.confgSecurity = []
-            self.confgSecurity.append('wpa={}\n'.format(str(self.WPAtype_spinbox.value())))
+            self.confgSecurity.append('wpa={}\n'.format(str(self.getWPAType())))
             self.confgSecurity.append('wpa_key_mgmt=WPA-PSK\n')
             self.confgSecurity.append('wpa_passphrase={}\n'.format(self.editPasswordAP.text()))
             if '+' in self.wpa_pairwiseCB.currentText():
@@ -1128,7 +1142,7 @@ class WifiPumpkin(QWidget):
                 self.SettingsAP['hostapd'].append(config)
             self.FSettings.Settings.set_setting('accesspoint','WPA_SharedKey',self.editPasswordAP.text())
             self.FSettings.Settings.set_setting('accesspoint','WPA_Algorithms',self.wpa_pairwiseCB.currentText())
-            self.FSettings.Settings.set_setting('accesspoint','WPA_type',self.WPAtype_spinbox.value())
+            self.FSettings.Settings.set_setting('accesspoint','WPA_type',self.getWPAType())
 
     def Start_PumpAP(self):
         ''' start Access Point and settings plugins  '''
@@ -1247,7 +1261,8 @@ class WifiPumpkin(QWidget):
         self.selectCard.setEnabled(False)
         self.EditChannel.setEnabled(False)
         self.editPasswordAP.setEnabled(False)
-        self.WPAtype_spinbox.setEnabled(False)
+        self.WPA_rb.setEnabled(False)
+        self.WPA2_rb.setEnabled(False)
         self.wpa_pairwiseCB.setEnabled(False)
         self.PumpSettingsTAB.GroupDHCP.setEnabled(False)
         self.PopUpPlugins.tableplugins.setEnabled(False)
