@@ -12,6 +12,7 @@ Version 0.8.4
 - fixed class DNSServer resolver domain (DNS Response)
 - fixed no Internet Connection AP DNSServer #164
 - fixed enable Copy/edit row from HTTP-Requests Tables #167
+- Added Key checking
 
 Version 0.8.3
 -------------

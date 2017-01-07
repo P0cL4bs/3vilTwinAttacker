@@ -485,6 +485,9 @@ class WifiPumpkin(QWidget):
         self.WPAtype_spinbox.setValue(
             self.FSettings.Settings.get_setting('accesspoint','WPA_type',format=int))
         self.editPasswordAP.setFixedWidth(150)
+        self.editPasswordAP.textChanged.connect(self.update_settings)
+        self.WPAtype_spinbox.valueChanged.connect(self.update_settings)
+        self.update_settings()
 
         # add widgets on layout Group
         self.layoutNetworkPass.addRow(QLabel('Settings WPA/IEEE 802.11i'))
@@ -654,6 +657,20 @@ class WifiPumpkin(QWidget):
         self.boxHome.addWidget(self.StatusBar)
         self.TabListWidget_Menu.setCurrentRow(0)
         self.setLayout(self.boxHome)
+
+    def is_ascii(self, text):
+        try:
+            text.decode('ascii')
+            return True
+        except UnicodeDecodeError:
+            return False
+
+    def update_settings(self):
+        if 1 <= self.WPAtype_spinbox.value() >= 2:
+            if 8 <= len(self.editPasswordAP.text()) <= 63 and self.is_ascii(str(self.editPasswordAP.text())):
+                self.editPasswordAP.setStyleSheet("QLineEdit { border: 2px solid green;}")
+            else:
+                self.editPasswordAP.setStyleSheet("QLineEdit { border: 2px solid red;}")
 
     def show_arp_posion(self):
         ''' call GUI Arp Poison module '''
