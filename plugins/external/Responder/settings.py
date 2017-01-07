@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-# This file is part of Responder, a network take-over set of tools
-# created and maintained by Laurent Gaffie.
-# email: laurent.gaffie@gmail.com
+# This file is part of Responder
+# Original work by Laurent Gaffie - Trustwave Holdings
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -14,16 +14,16 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import ConfigParser
-import subprocess
 
 import utils
+import ConfigParser
+
 from utils import *
 
-__version__ = 'Responder 2.3.3.0'
+__version__ = 'Responder 2.3'
 
 class Settings:
-
+	
 	def __init__(self):
 		self.ResponderPATH = os.path.dirname(__file__)
 		self.Bind_To = '0.0.0.0'
@@ -69,10 +69,6 @@ class Settings:
 			print utils.color("Error: -I <if> mandatory option is missing", 1)
 			sys.exit(-1)
 
-		if options.Interface == "ALL" and options.OURIP == None:
-			print utils.color("Error: -i is missing.\nWhen using -I ALL you need to provide your current ip address", 1)
-			sys.exit(-1)
-
 		# Config parsing
 		config = ConfigParser.ConfigParser()
 		config.read(os.path.join(self.ResponderPATH, 'Responder.conf'))
@@ -102,7 +98,6 @@ class Settings:
 		self.SessionLogFile      = os.path.join(self.LogDir, config.get('Responder Core', 'SessionLog'))
 		self.PoisonersLogFile    = os.path.join(self.LogDir, config.get('Responder Core', 'PoisonersLog'))
 		self.AnalyzeLogFile      = os.path.join(self.LogDir, config.get('Responder Core', 'AnalyzeLog'))
-		self.ResponderConfigDump = os.path.join(self.LogDir, config.get('Responder Core', 'ResponderConfigDump'))
 
 		self.FTPLog          = os.path.join(self.LogDir, 'FTP-Clear-Text-Password-%s.txt')
 		self.IMAPLog         = os.path.join(self.LogDir, 'IMAP-Clear-Text-Password-%s.txt')
@@ -151,46 +146,31 @@ class Settings:
 		self.DontRespondToName = filter(None, [x.upper().strip() for x in config.get('Responder Core', 'DontRespondToName').strip().split(',')])
 
 		# Auto Ignore List
-		self.AutoIgnore                       = self.toBool(config.get('Responder Core', 'AutoIgnoreAfterSuccess'))
-		self.CaptureMultipleCredentials       = self.toBool(config.get('Responder Core', 'CaptureMultipleCredentials'))
-                self.CaptureMultipleHashFromSameHost  = self.toBool(config.get('Responder Core', 'CaptureMultipleHashFromSameHost'))
-		self.AutoIgnoreList                   = []
+		self.AutoIgnore                 = self.toBool(config.get('Responder Core', 'AutoIgnoreAfterSuccess'))
+		self.CaptureMultipleCredentials = self.toBool(config.get('Responder Core', 'CaptureMultipleCredentials'))
+		self.AutoIgnoreList             = []
 
 		# CLI options
-                self.ExternalIP         = options.ExternalIP
-		self.LM_On_Off          = options.LM_On_Off
-		self.WPAD_On_Off        = options.WPAD_On_Off
-		self.Wredirect          = options.Wredirect
-		self.NBTNSDomain        = options.NBTNSDomain
-		self.Basic              = options.Basic
-		self.Finger_On_Off      = options.Finger
-		self.Interface          = options.Interface
-		self.OURIP              = options.OURIP
-		self.Force_WPAD_Auth    = options.Force_WPAD_Auth
-		self.Upstream_Proxy     = options.Upstream_Proxy
-		self.AnalyzeMode        = options.Analyze
-		self.Verbose            = options.Verbose
-		self.ProxyAuth_On_Off   = options.ProxyAuth_On_Off
-		self.CommandLine        = str(sys.argv)
-
-                if self.ExternalIP:
-                        self.ExternalIPAton = socket.inet_aton(self.ExternalIP)
+		self.LM_On_Off       = options.LM_On_Off
+		self.WPAD_On_Off     = options.WPAD_On_Off
+		self.Wredirect       = options.Wredirect
+		self.NBTNSDomain     = options.NBTNSDomain
+		self.Basic           = options.Basic
+		self.Finger_On_Off   = options.Finger
+		self.Interface       = options.Interface
+		self.OURIP           = options.OURIP
+		self.Force_WPAD_Auth = options.Force_WPAD_Auth
+		self.Upstream_Proxy  = options.Upstream_Proxy
+		self.AnalyzeMode     = options.Analyze
+		self.Verbose         = options.Verbose
+		self.CommandLine     = str(sys.argv)
 
 		if self.HtmlToInject is None:
 			self.HtmlToInject = ''
 
-                self.Bind_To         = utils.FindLocalIP(self.Interface, self.OURIP)
+		self.Bind_To = utils.FindLocalIP(self.Interface, self.OURIP)
 
-                if self.Interface == "ALL":
-                	self.Bind_To_ALL  = True
-                else:
-                        self.Bind_To_ALL  = False
-
-                if self.Interface == "ALL":
-                	self.IP_aton   = socket.inet_aton(self.OURIP)
-                else:
-                	self.IP_aton   = socket.inet_aton(self.Bind_To)
-
+		self.IP_aton         = socket.inet_aton(self.Bind_To)
 		self.Os_version      = sys.platform
 
 		# Set up Challenge
@@ -207,6 +187,7 @@ class Settings:
 		# Set up logging
 		logging.basicConfig(filename=self.SessionLogFile, level=logging.INFO, format='%(asctime)s - %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 		logging.warning('Responder Started: %s' % self.CommandLine)
+		logging.warning('Responder Config: %s' % str(self))
 
 		Formatter = logging.Formatter('%(asctime)s - %(message)s')
 		PLog_Handler = logging.FileHandler(self.PoisonersLogFile, 'w')
@@ -221,30 +202,6 @@ class Settings:
 
 		self.AnalyzeLogger = logging.getLogger('Analyze Log')
 		self.AnalyzeLogger.addHandler(ALog_Handler)
-
-		try:
-			NetworkCard = subprocess.check_output(["ifconfig", "-a"])
-		except subprocess.CalledProcessError as ex:
-			NetworkCard = "Error fetching Network Interfaces:", ex
-			pass
-		try:
-			DNS = subprocess.check_output(["cat", "/etc/resolv.conf"])
-		except subprocess.CalledProcessError as ex:
-			DNS = "Error fetching DNS configuration:", ex
-			pass
-		try:
-			RoutingInfo = subprocess.check_output(["netstat", "-rn"])
-		except subprocess.CalledProcessError as ex:
-			RoutingInfo = "Error fetching Routing information:", ex
-			pass
-
-		Message = "Current environment is:\nNetwork Config:\n%s\nDNS Settings:\n%s\nRouting info:\n%s\n\n"%(NetworkCard,DNS,RoutingInfo)
-		try:
-			utils.DumpConfig(self.ResponderConfigDump, Message)
-			utils.DumpConfig(self.ResponderConfigDump, str(self))
-		except AttributeError as ex:
-			print "Missing Module:", ex
-			pass
 
 def init():
 	global Config

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-# This file is part of Responder, a network take-over set of tools 
-# created and maintained by Laurent Gaffie.
-# email: laurent.gaffie@gmail.com
+# This file is part of Responder
+# Original work by Laurent Gaffie - Trustwave Holdings
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -36,6 +36,7 @@ def Poisoned_MDNS_Name(data):
 	data = data[12:]
 	return data[:len(data)-5]
 
+
 class MDNS(BaseRequestHandler):
 	def handle(self):
 		MADDR = "224.0.0.251"
@@ -55,7 +56,7 @@ class MDNS(BaseRequestHandler):
 			if Parse_IPV6_Addr(data):
 
 				Poisoned_Name = Poisoned_MDNS_Name(data)
-				Buffer = MDNS_Ans(AnswerName = Poisoned_Name, IP=RespondWithIPAton())
+				Buffer = MDNS_Ans(AnswerName = Poisoned_Name, IP=socket.inet_aton(settings.Config.Bind_To))
 				Buffer.calculate()
 				soc.sendto(str(Buffer), (MADDR, MPORT))
 

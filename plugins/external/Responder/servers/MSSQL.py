@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-# This file is part of Responder, a network take-over set of tools 
-# created and maintained by Laurent Gaffie.
-# email: laurent.gaffie@gmail.com
+# This file is part of Responder
+# Original work by Laurent Gaffie - Trustwave Holdings
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -146,6 +146,5 @@ class MSSQL(BaseRequestHandler):
 				if data[0] == "\x11":  # NegoSSP Auth
 					ParseSQLHash(data,self.client_address[0])
 
-		except:
+		except socket.timeout:
 			self.request.close()
-                        pass
