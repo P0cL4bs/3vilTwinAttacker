@@ -1145,6 +1145,13 @@ class WifiPumpkin(QWidget):
             self.FSettings.Settings.set_setting('accesspoint','WPA_Algorithms',self.wpa_pairwiseCB.currentText())
             self.FSettings.Settings.set_setting('accesspoint','WPA_type',self.WPAtype_spinbox.value())
 
+    def show_key_warning(self):
+        return QMessageBox.warning(self, 'Security Key',
+                                   'This Key can not be used.\n'
+                                   'The requirements for a valid key are:\n\n'
+                                   'WPA:\n'
+                                   '- 8 to 63 ASCII characters')
+
     def Start_PumpAP(self):
         ''' start Access Point and settings plugins  '''
         if len(self.selectCard.currentText()) == 0:
@@ -1195,6 +1202,11 @@ class WifiPumpkin(QWidget):
                 'it works, but not share internet connection in some case.\n'
                 'for fix this, You need change on tab (settings -> Class Ranges)'
                 'now you have choose the Class range different of your network.')
+
+        # Check the key
+        if 1 <= self.WPAtype_spinbox.value() <= 2:
+            if not (8 <= len(self.editPasswordAP.text()) <= 63 and self.is_ascii(str(self.editPasswordAP.text()))):
+                return self.show_key_warning()
 
         print('\n[*] Loading debugging mode')
         # create session ID to logging process
