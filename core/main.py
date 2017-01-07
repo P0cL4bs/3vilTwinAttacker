@@ -668,9 +668,9 @@ class WifiPumpkin(QWidget):
     def update_settings(self):
         if 1 <= self.WPAtype_spinbox.value() <= 2:
             if 8 <= len(self.editPasswordAP.text()) <= 63 and self.is_ascii(str(self.editPasswordAP.text())):
-                self.editPasswordAP.setStyleSheet("QLineEdit { border: 2px solid green;}")
+                self.editPasswordAP.setStyleSheet("QLineEdit { border: 1px solid green;}")
             else:
-                self.editPasswordAP.setStyleSheet("QLineEdit { border: 2px solid red;}")
+                self.editPasswordAP.setStyleSheet("QLineEdit { border: 1px solid red;}")
 
     def show_arp_posion(self):
         ''' call GUI Arp Poison module '''
