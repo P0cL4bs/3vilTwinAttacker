@@ -666,7 +666,7 @@ class WifiPumpkin(QWidget):
             return False
 
     def update_settings(self):
-        if 1 <= self.WPAtype_spinbox.value() >= 2:
+        if 1 <= self.WPAtype_spinbox.value() <= 2:
             if 8 <= len(self.editPasswordAP.text()) <= 63 and self.is_ascii(str(self.editPasswordAP.text())):
                 self.editPasswordAP.setStyleSheet("QLineEdit { border: 2px solid green;}")
             else:
