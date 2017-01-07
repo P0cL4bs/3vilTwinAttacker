@@ -2,10 +2,10 @@ from plugins.extension import *
 from collections import OrderedDict
 from PyQt4.QtGui import (
     QListWidget,QTableWidget,QSizePolicy,
-    QAbstractItemView,QTableWidgetItem,QIcon
+    QAbstractItemView,QTableWidgetItem,QIcon,QListWidgetItem
 )
 from PyQt4.QtCore import (
-    SIGNAL,QProcess,pyqtSlot,QObject,SLOT,Qt
+    SIGNAL,QProcess,pyqtSlot,QObject,SLOT,Qt,QSize
 )
 
 """
@@ -57,7 +57,6 @@ class dockAreaAPI(QListWidget):
     ''' general dock widgets for show logging of plugins '''
     def __init__(self, parent=None,info={}):
         super(dockAreaAPI, self).__init__(parent)
-        self.setMinimumWidth(580)
         self.logger = info
         self.startThread  = False
         self.processThread = None
@@ -66,7 +65,11 @@ class dockAreaAPI(QListWidget):
         self.startThread = True
 
     def writeModeData(self,data):
-        self.addItem(data)
+        item = QListWidgetItem()
+        item.setText(data)
+        item.setSizeHint(QSize(27,27))
+        item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsEditable | Qt.ItemIsSelectable)
+        self.insertItem(self.count()+1,item)
         self.scrollToBottom()
 
     def stopProcess(self):

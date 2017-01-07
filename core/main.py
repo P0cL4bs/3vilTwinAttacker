@@ -1336,7 +1336,7 @@ class WifiPumpkin(QWidget):
             setup_logger('responder', 'logs/AccessPoint/responder.log',self.currentSessionID)
             self.responderlog = getLogger('responder')
             self.Thread_responder = ProcessThread({'python':['plugins/external/Responder/Responder.py','-I',
-            str(self.selectCard.currentText()),'-wrFbv','-k',self.currentSessionID]})
+            str(self.selectCard.currentText()),'-wrFbv']})
             self.Thread_responder._ProcssOutput.connect(self.get_responder_output)
             self.Thread_responder.setObjectName('Responder')
             self.Apthreads['RougeAP'].append(self.Thread_responder)
@@ -1424,7 +1424,13 @@ class WifiPumpkin(QWidget):
         if self.FSettings.Settings.get_setting('accesspoint','statusAP',format=bool):
             if hasattr(self,'dockAreaList'):
                 if self.PumpSettingsTAB.dockInfo['Dns2Proxy']['active']:
-                    self.dockAreaList['Dns2Proxy'].writeModeData(data)
+                    try:
+                        data = str(data).split(' : ')[1]
+                        for line in data.split('\n'):
+                            if len(line) > 2 and not self.currentSessionID in line:
+                                self.dockAreaList['Dns2Proxy'].writeModeData(line)
+                    except IndexError:
+                        return None
 
     def get_responder_output(self,data):
         ''' get std_ouput the thread responder and add in DockArea '''
@@ -1441,7 +1447,10 @@ class WifiPumpkin(QWidget):
             if hasattr(self,'dockAreaList'):
                 if self.PumpSettingsTAB.dockInfo['BDFProxy']['active']:
                     try:
-                        self.dockAreaList['BDFProxy'].writeModeData(str(data).split(' : ')[1])
+                        data = str(data).split(' : ')[1]
+                        for line in data.split('\n'):
+                            if len(line) > 2:
+                                self.dockAreaList['BDFProxy'].writeModeData(line)
                     except IndexError:
                         return None
 

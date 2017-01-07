@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-# This file is part of Responder, a network take-over set of tools 
-# created and maintained by Laurent Gaffie.
-# email: laurent.gaffie@gmail.com
+# This file is part of Responder
+# Original work by Laurent Gaffie - Trustwave Holdings
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -19,7 +19,6 @@ import settings
 
 from base64 import b64decode, b64encode
 from odict import OrderedDict
-from utils import HTTPCurrentDate, RespondWithIPAton
 
 # Packet class handling all packet generation (see odict.py).
 class Packet():
@@ -57,7 +56,7 @@ class NBT_Ans(Packet):
 	def calculate(self,data):
 		self.fields["Tid"] = data[0:2]
 		self.fields["NbtName"] = data[12:46]
-                self.fields["IP"] = RespondWithIPAton()
+		self.fields["IP"] = settings.Config.IP_aton
 
 # DNS Answer Packet
 class DNS_Ans(Packet):
@@ -83,7 +82,7 @@ class DNS_Ans(Packet):
 	def calculate(self,data):
 		self.fields["Tid"] = data[0:2]
 		self.fields["QuestionName"] = ''.join(data[12:].split('\x00')[:1])
-                self.fields["IP"] = RespondWithIPAton()
+		self.fields["IP"] = settings.Config.IP_aton
 		self.fields["IPLen"] = struct.pack(">h",len(self.fields["IP"]))
 
 # LLMNR Answer Packet
@@ -111,7 +110,7 @@ class LLMNR_Ans(Packet):
 	])
 
 	def calculate(self):
-                self.fields["IP"] = RespondWithIPAton()
+		self.fields["IP"] = settings.Config.IP_aton
 		self.fields["IPLen"] = struct.pack(">h",len(self.fields["IP"]))
 		self.fields["AnswerNameLen"] = struct.pack(">h",len(self.fields["AnswerName"]))[1]
 		self.fields["QuestionNameLen"] = struct.pack(">h",len(self.fields["QuestionName"]))[1]
@@ -205,10 +204,11 @@ class NTLM_Challenge(Packet):
 class IIS_Auth_401_Ans(Packet):
 	fields = OrderedDict([
 		("Code",          "HTTP/1.1 401 Unauthorized\r\n"),
-		("ServerType",    "Server: Microsoft-IIS/7.5\r\n"),
-		("Date",          "Date: "+HTTPCurrentDate()+"\r\n"),
+		("ServerType",    "Server: Microsoft-IIS/6.0\r\n"),
+		("Date",          "Date: Wed, 12 Sep 2012 13:06:55 GMT\r\n"),
 		("Type",          "Content-Type: text/html\r\n"),
 		("WWW-Auth",      "WWW-Authenticate: NTLM\r\n"),
+		("PoweredBy",     "X-Powered-By: ASP.NET\r\n"),
 		("Len",           "Content-Length: 0\r\n"),
 		("CRLF",          "\r\n"),
 	])
@@ -216,10 +216,11 @@ class IIS_Auth_401_Ans(Packet):
 class IIS_Auth_Granted(Packet):
 	fields = OrderedDict([
 		("Code",          "HTTP/1.1 200 OK\r\n"),
-		("ServerType",    "Server: Microsoft-IIS/7.5\r\n"),
-		("Date",          "Date: "+HTTPCurrentDate()+"\r\n"),
+		("ServerType",    "Server: Microsoft-IIS/6.0\r\n"),
+		("Date",          "Date: Wed, 12 Sep 2012 13:06:55 GMT\r\n"),
 		("Type",          "Content-Type: text/html\r\n"),
 		("WWW-Auth",      "WWW-Authenticate: NTLM\r\n"),
+		("PoweredBy",     "X-Powered-By: ASP.NET\r\n"),
 		("ContentLen",    "Content-Length: "),
 		("ActualLen",     "76"),
 		("CRLF",          "\r\n\r\n"),
@@ -231,12 +232,13 @@ class IIS_Auth_Granted(Packet):
 class IIS_NTLM_Challenge_Ans(Packet):
 	fields = OrderedDict([
 		("Code",          "HTTP/1.1 401 Unauthorized\r\n"),
-		("ServerType",    "Server: Microsoft-IIS/7.5\r\n"),
-		("Date",          "Date: "+HTTPCurrentDate()+"\r\n"),
+		("ServerType",    "Server: Microsoft-IIS/6.0\r\n"),
+		("Date",          "Date: Wed, 12 Sep 2012 13:06:55 GMT\r\n"),
 		("Type",          "Content-Type: text/html\r\n"),
 		("WWWAuth",       "WWW-Authenticate: NTLM "),
 		("Payload",       ""),
 		("Payload-CRLF",  "\r\n"),
+		("PoweredBy",     "X-Powered-By: ASP.NC0CD7B7802C76736E9B26FB19BEB2D36290B9FF9A46EDDA5ET\r\n"),
 		("Len",           "Content-Length: 0\r\n"),
 		("CRLF",          "\r\n"),
 	])
@@ -247,10 +249,11 @@ class IIS_NTLM_Challenge_Ans(Packet):
 class IIS_Basic_401_Ans(Packet):
 	fields = OrderedDict([
 		("Code",          "HTTP/1.1 401 Unauthorized\r\n"),
-		("ServerType",    "Server: Microsoft-IIS/7.5\r\n"),
-		("Date",          "Date: "+HTTPCurrentDate()+"\r\n"),
+		("ServerType",    "Server: Microsoft-IIS/6.0\r\n"),
+		("Date",          "Date: Wed, 12 Sep 2012 13:06:55 GMT\r\n"),
 		("Type",          "Content-Type: text/html\r\n"),
 		("WWW-Auth",      "WWW-Authenticate: Basic realm=\"Authentication Required\"\r\n"),
+		("PoweredBy",     "X-Powered-By: ASP.NET\r\n"),
 		("AllowOrigin",   "Access-Control-Allow-Origin: *\r\n"),
 		("AllowCreds",    "Access-Control-Allow-Credentials: true\r\n"),
 		("Len",           "Content-Length: 0\r\n"),
@@ -261,9 +264,10 @@ class IIS_Basic_401_Ans(Packet):
 class WPADScript(Packet):
 	fields = OrderedDict([
 		("Code",          "HTTP/1.1 200 OK\r\n"),
-		("ServerTlype",    "Server: Microsoft-IIS/7.5\r\n"),
-		("Date",          "Date: "+HTTPCurrentDate()+"\r\n"),
+		("ServerTlype",    "Server: Microsoft-IIS/6.0\r\n"),
+		("Date",          "Date: Wed, 12 Sep 2012 13:06:55 GMT\r\n"),
 		("Type",          "Content-Type: application/x-ns-proxy-autoconfig\r\n"),
+		("PoweredBy",     "X-Powered-By: ASP.NET\r\n"),
 		("ContentLen",    "Content-Length: "),
 		("ActualLen",     "76"),
 		("CRLF",          "\r\n\r\n"),
@@ -276,15 +280,16 @@ class ServeExeFile(Packet):
 	fields = OrderedDict([
 		("Code",          "HTTP/1.1 200 OK\r\n"),
 		("ContentType",   "Content-Type: application/octet-stream\r\n"),
-		("LastModified",  "Last-Modified: "+HTTPCurrentDate()+"\r\n"),
+		("LastModified",  "Last-Modified: Wed, 24 Nov 2010 00:39:06 GMT\r\n"),
 		("AcceptRanges",  "Accept-Ranges: bytes\r\n"),
 		("Server",        "Server: Microsoft-IIS/7.5\r\n"),
+		("PoweredBy",     "X-Powered-By: ASP.NET\r\n"),
 		("ContentDisp",   "Content-Disposition: attachment; filename="),
 		("ContentDiFile", ""),
 		("FileCRLF",      ";\r\n"),
 		("ContentLen",    "Content-Length: "),
 		("ActualLen",     "76"),
-		("Date",          "\r\nDate: "+HTTPCurrentDate()+"\r\n"),
+		("Date",          "\r\nDate: Thu, 24 Oct 2013 22:35:46 GMT\r\n"),
 		("Connection",    "Connection: keep-alive\r\n"),
 		("X-CCC",         "US\r\n"),
 		("X-CID",         "2\r\n"),
@@ -298,80 +303,19 @@ class ServeHtmlFile(Packet):
 	fields = OrderedDict([
 		("Code",          "HTTP/1.1 200 OK\r\n"),
 		("ContentType",   "Content-Type: text/html\r\n"),
-		("LastModified",  "Last-Modified: "+HTTPCurrentDate()+"\r\n"),
+		("LastModified",  "Last-Modified: Wed, 24 Nov 2010 00:39:06 GMT\r\n"),
 		("AcceptRanges",  "Accept-Ranges: bytes\r\n"),
 		("Server",        "Server: Microsoft-IIS/7.5\r\n"),
+		("PoweredBy",     "X-Powered-By: ASP.NET\r\n"),
 		("ContentLen",    "Content-Length: "),
 		("ActualLen",     "76"),
-		("Date",          "\r\nDate: "+HTTPCurrentDate()+"\r\n"),
+		("Date",          "\r\nDate: Thu, 24 Oct 2013 22:35:46 GMT\r\n"),
 		("Connection",    "Connection: keep-alive\r\n"),
 		("CRLF",          "\r\n"),
 		("Payload",       "jj"),
 	])
 	def calculate(self):
 		self.fields["ActualLen"] = len(str(self.fields["Payload"]))
-
-##### WPAD Auth Packets #####
-class WPAD_Auth_407_Ans(Packet):
-	fields = OrderedDict([
-		("Code",          "HTTP/1.1 407 Unauthorized\r\n"),
-		("ServerType",    "Server: Microsoft-IIS/7.5\r\n"),
-		("Date",          "Date: "+HTTPCurrentDate()+"\r\n"),
-		("Type",          "Content-Type: text/html\r\n"),
-		("WWW-Auth",      "Proxy-Authenticate: NTLM\r\n"),
-		("Connection",    "Proxy-Connection: close\r\n"),
-		("Cache-Control",    "Cache-Control: no-cache\r\n"),
-		("Pragma",        "Pragma: no-cache\r\n"),
-		("Proxy-Support", "Proxy-Support: Session-Based-Authentication\r\n"),
-		("Len",           "Content-Length: 0\r\n"),
-		("CRLF",          "\r\n"),
-	])
-
-
-class WPAD_NTLM_Challenge_Ans(Packet):
-	fields = OrderedDict([
-		("Code",          "HTTP/1.1 407 Unauthorized\r\n"),
-		("ServerType",    "Server: Microsoft-IIS/7.5\r\n"),
-		("Date",          "Date: "+HTTPCurrentDate()+"\r\n"),
-		("Type",          "Content-Type: text/html\r\n"),
-		("WWWAuth",       "Proxy-Authenticate: NTLM "),
-		("Payload",       ""),
-		("Payload-CRLF",  "\r\n"),
-		("Len",           "Content-Length: 0\r\n"),
-		("CRLF",          "\r\n"),
-	])
-
-	def calculate(self,payload):
-		self.fields["Payload"] = b64encode(payload)
-
-class WPAD_Basic_407_Ans(Packet):
-	fields = OrderedDict([
-		("Code",          "HTTP/1.1 407 Unauthorized\r\n"),
-		("ServerType",    "Server: Microsoft-IIS/7.5\r\n"),
-		("Date",          "Date: "+HTTPCurrentDate()+"\r\n"),
-		("Type",          "Content-Type: text/html\r\n"),
-		("WWW-Auth",      "Proxy-Authenticate: Basic realm=\"Authentication Required\"\r\n"),
-		("Connection",    "Proxy-Connection: close\r\n"),
-		("Cache-Control",    "Cache-Control: no-cache\r\n"),
-		("Pragma",        "Pragma: no-cache\r\n"),
-		("Proxy-Support", "Proxy-Support: Session-Based-Authentication\r\n"),
-		("Len",           "Content-Length: 0\r\n"),
-		("CRLF",          "\r\n"),
-	])
-
-##### WEB Dav Stuff #####
-class WEBDAV_Options_Answer(Packet):
-	fields = OrderedDict([
-		("Code",          "HTTP/1.1 200 OK\r\n"),
-		("Date",          "Date: "+HTTPCurrentDate()+"\r\n"),
-		("ServerType",    "Server: Microsoft-IIS/7.5\r\n"),
-		("Allow",         "Allow: GET,HEAD,POST,OPTIONS,TRACE\r\n"),
-		("Len",           "Content-Length: 0\r\n"),
-		("Keep-Alive:", "Keep-Alive: timeout=5, max=100\r\n"),
-		("Connection",    "Connection: Keep-Alive\r\n"),
-		("Content-Type",  "Content-Type: text/html\r\n"),
-		("CRLF",          "\r\n"),
-	])
 
 ##### FTP Packets #####
 class FTPPacket(Packet):
@@ -1336,265 +1280,36 @@ class SMBSessTreeAns(Packet):
 
 class SMB2Header(Packet):
     fields = OrderedDict([
-        ("Proto",         "\xfe\x53\x4d\x42"),
-        ("Len",           "\x40\x00"),#Always 64.
-        ("CreditCharge",  "\x00\x00"),
-        ("NTStatus",      "\x00\x00\x00\x00"),
-        ("Cmd",           "\x00\x00"),
-        ("Credits",       "\x01\x00"),
-        ("Flags",         "\x01\x00\x00\x00"),
-        ("NextCmd",       "\x00\x00\x00\x00"),
-        ("MessageId",     "\x00\x00\x00\x00\x00\x00\x00\x00"),
-        ("PID",           "\x00\x00\x00\x00"),
-        ("TID",           "\x00\x00\x00\x00"),
-        ("SessionID",     "\x00\x00\x00\x00\x00\x00\x00\x00"),
-        ("Signature",     "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"),
+        ("Proto", "\xff\x53\x4d\x42"),
+        ("Cmd", "\x72"),
+        ("Error-Code", "\x00\x00\x00\x00" ),
+        ("Flag1", "\x10"),
+        ("Flag2", "\x00\x00"),
+        ("Pidhigh", "\x00\x00"),
+        ("Signature", "\x00\x00\x00\x00\x00\x00\x00\x00"),
+        ("Reserved", "\x00\x00"),
+        ("TID", "\x00\x00"),
+        ("PID", "\xff\xfe"),
+        ("UID", "\x00\x00"),
+        ("MID", "\x00\x00"),
     ])
 
-class SMB2NegoAns(Packet):
-	fields = OrderedDict([
-		("Len",             "\x41\x00"),
-		("Signing",         "\x01\x00"),
-		("Dialect",         "\xff\x02"),
-		("Reserved",        "\x00\x00"),
-		("Guid",            "\xee\x85\xab\xf7\xea\xf6\x0c\x4f\x92\x81\x92\x47\x6d\xeb\x76\xa9"),
-		("Capabilities",    "\x07\x00\x00\x00"),
-		("MaxTransSize",    "\x00\x00\x10\x00"),
-		("MaxReadSize",     "\x00\x00\x10\x00"),
-		("MaxWriteSize",    "\x00\x00\x10\x00"),
-		("SystemTime",      "\x27\xfb\xea\xd7\x50\x09\xd2\x01"),
-		("BootTime",        "\x22\xfb\x80\x01\x40\x09\xd2\x01"),
-		("SecBlobOffSet",             "\x80\x00"),
-		("SecBlobLen",                "\x78\x00"),
-		("Reserved2",                 "\x00\x00\x00\x00"),
-		("InitContextTokenASNId",     "\x60"),
-		("InitContextTokenASNLen",    "\x76"),
-		("ThisMechASNId",             "\x06"),
-		("ThisMechASNLen",            "\x06"),
-		("ThisMechASNStr",            "\x2b\x06\x01\x05\x05\x02"),
-		("SpNegoTokenASNId",          "\xA0"),
-		("SpNegoTokenASNLen",         "\x6c"),
-		("NegTokenASNId",             "\x30"),
-		("NegTokenASNLen",            "\x6a"),
-		("NegTokenTag0ASNId",         "\xA0"),
-		("NegTokenTag0ASNLen",        "\x3c"),
-		("NegThisMechASNId",          "\x30"),
-		("NegThisMechASNLen",         "\x3a"),
-		("NegThisMech1ASNId",         "\x06"),
-		("NegThisMech1ASNLen",        "\x0a"),
-		("NegThisMech1ASNStr",        "\x2b\x06\x01\x04\x01\x82\x37\x02\x02\x1e"),
-		("NegThisMech2ASNId",         "\x06"),
-		("NegThisMech2ASNLen",        "\x09"),
-		("NegThisMech2ASNStr",        "\x2a\x86\x48\x82\xf7\x12\x01\x02\x02"),
-		("NegThisMech3ASNId",         "\x06"),
-		("NegThisMech3ASNLen",        "\x09"),
-		("NegThisMech3ASNStr",        "\x2a\x86\x48\x86\xf7\x12\x01\x02\x02"),
-		("NegThisMech4ASNId",         "\x06"),
-		("NegThisMech4ASNLen",        "\x0a"),
-		("NegThisMech4ASNStr",        "\x2a\x86\x48\x86\xf7\x12\x01\x02\x02\x03"),
-		("NegThisMech5ASNId",         "\x06"),
-		("NegThisMech5ASNLen",        "\x0a"),
-		("NegThisMech5ASNStr",        "\x2b\x06\x01\x04\x01\x82\x37\x02\x02\x0a"),
-		("NegTokenTag3ASNId",         "\xA3"),
-		("NegTokenTag3ASNLen",        "\x2a"),
-		("NegHintASNId",              "\x30"),
-		("NegHintASNLen",             "\x28"),
-		("NegHintTag0ASNId",          "\xa0"),
-		("NegHintTag0ASNLen",         "\x26"),
-		("NegHintFinalASNId",         "\x1b"), 
-		("NegHintFinalASNLen",        "\x24"),
-		("NegHintFinalASNStr",        "Server2008@SMB3.local"),
-	])
-
-	def calculate(self):
-
-
-		StructLen = str(self.fields["Len"])+str(self.fields["Signing"])+str(self.fields["Dialect"])+str(self.fields["Reserved"])+str(self.fields["Guid"])+str(self.fields["Capabilities"])+str(self.fields["MaxTransSize"])+str(self.fields["MaxReadSize"])+str(self.fields["MaxWriteSize"])+str(self.fields["SystemTime"])+str(self.fields["BootTime"])+str(self.fields["SecBlobOffSet"])+str(self.fields["SecBlobLen"])+str(self.fields["Reserved2"])
-                 
-		SecBlobLen = str(self.fields["InitContextTokenASNId"])+str(self.fields["InitContextTokenASNLen"])+str(self.fields["ThisMechASNId"])+str(self.fields["ThisMechASNLen"])+str(self.fields["ThisMechASNStr"])+str(self.fields["SpNegoTokenASNId"])+str(self.fields["SpNegoTokenASNLen"])+str(self.fields["NegTokenASNId"])+str(self.fields["NegTokenASNLen"])+str(self.fields["NegTokenTag0ASNId"])+str(self.fields["NegTokenTag0ASNLen"])+str(self.fields["NegThisMechASNId"])+str(self.fields["NegThisMechASNLen"])+str(self.fields["NegThisMech1ASNId"])+str(self.fields["NegThisMech1ASNLen"])+str(self.fields["NegThisMech1ASNStr"])+str(self.fields["NegThisMech2ASNId"])+str(self.fields["NegThisMech2ASNLen"])+str(self.fields["NegThisMech2ASNStr"])+str(self.fields["NegThisMech3ASNId"])+str(self.fields["NegThisMech3ASNLen"])+str(self.fields["NegThisMech3ASNStr"])+str(self.fields["NegThisMech4ASNId"])+str(self.fields["NegThisMech4ASNLen"])+str(self.fields["NegThisMech4ASNStr"])+str(self.fields["NegThisMech5ASNId"])+str(self.fields["NegThisMech5ASNLen"])+str(self.fields["NegThisMech5ASNStr"])+str(self.fields["NegTokenTag3ASNId"])+str(self.fields["NegTokenTag3ASNLen"])+str(self.fields["NegHintASNId"])+str(self.fields["NegHintASNLen"])+str(self.fields["NegHintTag0ASNId"])+str(self.fields["NegHintTag0ASNLen"])+str(self.fields["NegHintFinalASNId"])+str(self.fields["NegHintFinalASNLen"])+str(self.fields["NegHintFinalASNStr"])
-
-
-		AsnLenStart = str(self.fields["ThisMechASNId"])+str(self.fields["ThisMechASNLen"])+str(self.fields["ThisMechASNStr"])+str(self.fields["SpNegoTokenASNId"])+str(self.fields["SpNegoTokenASNLen"])+str(self.fields["NegTokenASNId"])+str(self.fields["NegTokenASNLen"])+str(self.fields["NegTokenTag0ASNId"])+str(self.fields["NegTokenTag0ASNLen"])+str(self.fields["NegThisMechASNId"])+str(self.fields["NegThisMechASNLen"])+str(self.fields["NegThisMech1ASNId"])+str(self.fields["NegThisMech1ASNLen"])+str(self.fields["NegThisMech1ASNStr"])+str(self.fields["NegThisMech2ASNId"])+str(self.fields["NegThisMech2ASNLen"])+str(self.fields["NegThisMech2ASNStr"])+str(self.fields["NegThisMech3ASNId"])+str(self.fields["NegThisMech3ASNLen"])+str(self.fields["NegThisMech3ASNStr"])+str(self.fields["NegThisMech4ASNId"])+str(self.fields["NegThisMech4ASNLen"])+str(self.fields["NegThisMech4ASNStr"])+str(self.fields["NegThisMech5ASNId"])+str(self.fields["NegThisMech5ASNLen"])+str(self.fields["NegThisMech5ASNStr"])+str(self.fields["NegTokenTag3ASNId"])+str(self.fields["NegTokenTag3ASNLen"])+str(self.fields["NegHintASNId"])+str(self.fields["NegHintASNLen"])+str(self.fields["NegHintTag0ASNId"])+str(self.fields["NegHintTag0ASNLen"])+str(self.fields["NegHintFinalASNId"])+str(self.fields["NegHintFinalASNLen"])+str(self.fields["NegHintFinalASNStr"])
-
-		AsnLen2 = str(self.fields["NegTokenASNId"])+str(self.fields["NegTokenASNLen"])+str(self.fields["NegTokenTag0ASNId"])+str(self.fields["NegTokenTag0ASNLen"])+str(self.fields["NegThisMechASNId"])+str(self.fields["NegThisMechASNLen"])+str(self.fields["NegThisMech1ASNId"])+str(self.fields["NegThisMech1ASNLen"])+str(self.fields["NegThisMech1ASNStr"])+str(self.fields["NegThisMech2ASNId"])+str(self.fields["NegThisMech2ASNLen"])+str(self.fields["NegThisMech2ASNStr"])+str(self.fields["NegThisMech3ASNId"])+str(self.fields["NegThisMech3ASNLen"])+str(self.fields["NegThisMech3ASNStr"])+str(self.fields["NegThisMech4ASNId"])+str(self.fields["NegThisMech4ASNLen"])+str(self.fields["NegThisMech4ASNStr"])+str(self.fields["NegThisMech5ASNId"])+str(self.fields["NegThisMech5ASNLen"])+str(self.fields["NegThisMech5ASNStr"])+str(self.fields["NegTokenTag3ASNId"])+str(self.fields["NegTokenTag3ASNLen"])+str(self.fields["NegHintASNId"])+str(self.fields["NegHintASNLen"])+str(self.fields["NegHintTag0ASNId"])+str(self.fields["NegHintTag0ASNLen"])+str(self.fields["NegHintFinalASNId"])+str(self.fields["NegHintFinalASNLen"])+str(self.fields["NegHintFinalASNStr"])
-
-		MechTypeLen = str(self.fields["NegThisMechASNId"])+str(self.fields["NegThisMechASNLen"])+str(self.fields["NegThisMech1ASNId"])+str(self.fields["NegThisMech1ASNLen"])+str(self.fields["NegThisMech1ASNStr"])+str(self.fields["NegThisMech2ASNId"])+str(self.fields["NegThisMech2ASNLen"])+str(self.fields["NegThisMech2ASNStr"])+str(self.fields["NegThisMech3ASNId"])+str(self.fields["NegThisMech3ASNLen"])+str(self.fields["NegThisMech3ASNStr"])+str(self.fields["NegThisMech4ASNId"])+str(self.fields["NegThisMech4ASNLen"])+str(self.fields["NegThisMech4ASNStr"])+str(self.fields["NegThisMech5ASNId"])+str(self.fields["NegThisMech5ASNLen"])+str(self.fields["NegThisMech5ASNStr"])
-
-		Tag3Len = str(self.fields["NegHintASNId"])+str(self.fields["NegHintASNLen"])+str(self.fields["NegHintTag0ASNId"])+str(self.fields["NegHintTag0ASNLen"])+str(self.fields["NegHintFinalASNId"])+str(self.fields["NegHintFinalASNLen"])+str(self.fields["NegHintFinalASNStr"])
-
-                #Packet Struct len
-		self.fields["Len"] = struct.pack("<h",len(StructLen)+1)
-                #Sec Blob lens
-		self.fields["SecBlobOffSet"] = struct.pack("<h",len(StructLen)+64)
-		self.fields["SecBlobLen"] = struct.pack("<h",len(SecBlobLen))
-                #ASN Stuff
-		self.fields["InitContextTokenASNLen"] = struct.pack("<B", len(SecBlobLen)-2)
-		self.fields["ThisMechASNLen"] = struct.pack("<B", len(str(self.fields["ThisMechASNStr"])))
-		self.fields["SpNegoTokenASNLen"] = struct.pack("<B", len(AsnLen2))
-		self.fields["NegTokenASNLen"] = struct.pack("<B", len(AsnLen2)-2)
-		self.fields["NegTokenTag0ASNLen"] = struct.pack("<B", len(MechTypeLen))
-		self.fields["NegThisMechASNLen"] = struct.pack("<B", len(MechTypeLen)-2)
-		self.fields["NegThisMech1ASNLen"] = struct.pack("<B", len(str(self.fields["NegThisMech1ASNStr"])))
-		self.fields["NegThisMech2ASNLen"] = struct.pack("<B", len(str(self.fields["NegThisMech2ASNStr"])))
-		self.fields["NegThisMech3ASNLen"] = struct.pack("<B", len(str(self.fields["NegThisMech3ASNStr"])))
-		self.fields["NegThisMech4ASNLen"] = struct.pack("<B", len(str(self.fields["NegThisMech4ASNStr"])))
-		self.fields["NegThisMech5ASNLen"] = struct.pack("<B", len(str(self.fields["NegThisMech5ASNStr"])))
-		self.fields["NegTokenTag3ASNLen"] = struct.pack("<B", len(Tag3Len))
-		self.fields["NegHintASNLen"] = struct.pack("<B", len(Tag3Len)-2)
-		self.fields["NegHintTag0ASNLen"] = struct.pack("<B", len(Tag3Len)-4)
-		self.fields["NegHintFinalASNLen"] = struct.pack("<B", len(str(self.fields["NegHintFinalASNStr"])))
-
-class SMB2Session1Data(Packet):
-	fields = OrderedDict([
-		("Len",             "\x09\x00"),
-		("SessionFlag",     "\x00\x00"),
-		("SecBlobOffSet",   "\x48\x00"),
-		("SecBlobLen",      "\x06\x01"),
-		("ChoiceTagASNId",        "\xa1"), 
-		("ChoiceTagASNLenOfLen",  "\x82"), 
-		("ChoiceTagASNIdLen",     "\x01\x02"),
-		("NegTokenTagASNId",      "\x30"),
-		("NegTokenTagASNLenOfLen","\x81"),
-		("NegTokenTagASNIdLen",   "\xff"),
-		("Tag0ASNId",             "\xA0"),
-		("Tag0ASNIdLen",          "\x03"),
-		("NegoStateASNId",        "\x0A"),
-		("NegoStateASNLen",       "\x01"),
-		("NegoStateASNValue",     "\x01"),
-		("Tag1ASNId",             "\xA1"),
-		("Tag1ASNIdLen",          "\x0c"),
-		("Tag1ASNId2",            "\x06"),
-		("Tag1ASNId2Len",         "\x0A"),
-		("Tag1ASNId2Str",         "\x2b\x06\x01\x04\x01\x82\x37\x02\x02\x0a"),
-		("Tag2ASNId",             "\xA2"),
-		("Tag2ASNIdLenOfLen",     "\x81"),
-		("Tag2ASNIdLen",          "\xE9"),
-		("Tag3ASNId",             "\x04"),
-		("Tag3ASNIdLenOfLen",     "\x81"),
-		("Tag3ASNIdLen",          "\xE6"),
-		("NTLMSSPSignature",      "NTLMSSP"),
-		("NTLMSSPSignatureNull",  "\x00"),
-		("NTLMSSPMessageType",    "\x02\x00\x00\x00"),
-		("NTLMSSPNtWorkstationLen","\x1e\x00"),
-		("NTLMSSPNtWorkstationMaxLen","\x1e\x00"),
-		("NTLMSSPNtWorkstationBuffOffset","\x38\x00\x00\x00"),
-		("NTLMSSPNtNegotiateFlags","\x15\x82\x89\xe2"),
-		("NTLMSSPNtServerChallenge","\x81\x22\x33\x34\x55\x46\xe7\x88"),
-		("NTLMSSPNtReserved","\x00\x00\x00\x00\x00\x00\x00\x00"),
-		("NTLMSSPNtTargetInfoLen","\x94\x00"),
-		("NTLMSSPNtTargetInfoMaxLen","\x94\x00"),
-		("NTLMSSPNtTargetInfoBuffOffset","\x56\x00\x00\x00"),
-		("NegTokenInitSeqMechMessageVersionHigh","\x06"),
-		("NegTokenInitSeqMechMessageVersionLow","\x03"),
-		("NegTokenInitSeqMechMessageVersionBuilt","\x80\x25"),
-		("NegTokenInitSeqMechMessageVersionReserved","\x00\x00\x00"),
-		("NegTokenInitSeqMechMessageVersionNTLMType","\x0f"),
-		("NTLMSSPNtWorkstationName","SMB3"),
-		("NTLMSSPNTLMChallengeAVPairsId","\x02\x00"),
-		("NTLMSSPNTLMChallengeAVPairsLen","\x0a\x00"),
-		("NTLMSSPNTLMChallengeAVPairsUnicodeStr","SMB3"),
-		("NTLMSSPNTLMChallengeAVPairs1Id","\x01\x00"),
-		("NTLMSSPNTLMChallengeAVPairs1Len","\x1e\x00"),
-		("NTLMSSPNTLMChallengeAVPairs1UnicodeStr","WIN-PRH492RQAFV"), 
-		("NTLMSSPNTLMChallengeAVPairs2Id","\x04\x00"),
-		("NTLMSSPNTLMChallengeAVPairs2Len","\x1e\x00"),
-		("NTLMSSPNTLMChallengeAVPairs2UnicodeStr","SMB3.local"), 
-		("NTLMSSPNTLMChallengeAVPairs3Id","\x03\x00"),
-		("NTLMSSPNTLMChallengeAVPairs3Len","\x1e\x00"),
-		("NTLMSSPNTLMChallengeAVPairs3UnicodeStr","WIN-PRH492RQAFV.SMB3.local"),
-		("NTLMSSPNTLMChallengeAVPairs5Id","\x05\x00"),
-		("NTLMSSPNTLMChallengeAVPairs5Len","\x04\x00"),
-		("NTLMSSPNTLMChallengeAVPairs5UnicodeStr","SMB3.local"),
-		("NTLMSSPNTLMChallengeAVPairs7Id","\x07\x00"),
-		("NTLMSSPNTLMChallengeAVPairs7Len","\x08\x00"),
-		("NTLMSSPNTLMChallengeAVPairs7UnicodeStr","\xc0\x65\x31\x50\xde\x09\xd2\x01"),
-		("NTLMSSPNTLMChallengeAVPairs6Id","\x00\x00"),
-		("NTLMSSPNTLMChallengeAVPairs6Len","\x00\x00"),
-	])
-
-
-	def calculate(self):
-		###### Convert strings to Unicode
-		self.fields["NTLMSSPNtWorkstationName"] = self.fields["NTLMSSPNtWorkstationName"].encode('utf-16le')
-		self.fields["NTLMSSPNTLMChallengeAVPairsUnicodeStr"] = self.fields["NTLMSSPNTLMChallengeAVPairsUnicodeStr"].encode('utf-16le')
-		self.fields["NTLMSSPNTLMChallengeAVPairs1UnicodeStr"] = self.fields["NTLMSSPNTLMChallengeAVPairs1UnicodeStr"].encode('utf-16le')
-		self.fields["NTLMSSPNTLMChallengeAVPairs2UnicodeStr"] = self.fields["NTLMSSPNTLMChallengeAVPairs2UnicodeStr"].encode('utf-16le')
-		self.fields["NTLMSSPNTLMChallengeAVPairs3UnicodeStr"] = self.fields["NTLMSSPNTLMChallengeAVPairs3UnicodeStr"].encode('utf-16le')
-		self.fields["NTLMSSPNTLMChallengeAVPairs5UnicodeStr"] = self.fields["NTLMSSPNTLMChallengeAVPairs5UnicodeStr"].encode('utf-16le')
-                
-                #Packet struct calc:
-		StructLen = str(self.fields["Len"])+str(self.fields["SessionFlag"])+str(self.fields["SecBlobOffSet"])+str(self.fields["SecBlobLen"])
-		###### SecBlobLen Calc:
-		CalculateSecBlob = str(self.fields["NTLMSSPSignature"])+str(self.fields["NTLMSSPSignatureNull"])+str(self.fields["NTLMSSPMessageType"])+str(self.fields["NTLMSSPNtWorkstationLen"])+str(self.fields["NTLMSSPNtWorkstationMaxLen"])+str(self.fields["NTLMSSPNtWorkstationBuffOffset"])+str(self.fields["NTLMSSPNtNegotiateFlags"])+str(self.fields["NTLMSSPNtServerChallenge"])+str(self.fields["NTLMSSPNtReserved"])+str(self.fields["NTLMSSPNtTargetInfoLen"])+str(self.fields["NTLMSSPNtTargetInfoMaxLen"])+str(self.fields["NTLMSSPNtTargetInfoBuffOffset"])+str(self.fields["NegTokenInitSeqMechMessageVersionHigh"])+str(self.fields["NegTokenInitSeqMechMessageVersionLow"])+str(self.fields["NegTokenInitSeqMechMessageVersionBuilt"])+str(self.fields["NegTokenInitSeqMechMessageVersionReserved"])+str(self.fields["NegTokenInitSeqMechMessageVersionNTLMType"])+str(self.fields["NTLMSSPNtWorkstationName"])+str(self.fields["NTLMSSPNTLMChallengeAVPairsId"])+str(self.fields["NTLMSSPNTLMChallengeAVPairsLen"])+str(self.fields["NTLMSSPNTLMChallengeAVPairsUnicodeStr"])+str(self.fields["NTLMSSPNTLMChallengeAVPairs1Id"])+str(self.fields["NTLMSSPNTLMChallengeAVPairs1Len"])+str(self.fields["NTLMSSPNTLMChallengeAVPairs1UnicodeStr"])+(self.fields["NTLMSSPNTLMChallengeAVPairs2Id"])+str(self.fields["NTLMSSPNTLMChallengeAVPairs2Len"])+str(self.fields["NTLMSSPNTLMChallengeAVPairs2UnicodeStr"])+(self.fields["NTLMSSPNTLMChallengeAVPairs3Id"])+str(self.fields["NTLMSSPNTLMChallengeAVPairs3Len"])+str(self.fields["NTLMSSPNTLMChallengeAVPairs3UnicodeStr"])+(self.fields["NTLMSSPNTLMChallengeAVPairs5Id"])+str(self.fields["NTLMSSPNTLMChallengeAVPairs5Len"])+str(self.fields["NTLMSSPNTLMChallengeAVPairs5UnicodeStr"])+(self.fields["NTLMSSPNTLMChallengeAVPairs7Id"])+str(self.fields["NTLMSSPNTLMChallengeAVPairs7Len"])+str(self.fields["NTLMSSPNTLMChallengeAVPairs7UnicodeStr"])+(self.fields["NTLMSSPNTLMChallengeAVPairs6Id"])+str(self.fields["NTLMSSPNTLMChallengeAVPairs6Len"])
-
-		AsnLen = str(self.fields["ChoiceTagASNId"])+str(self.fields["ChoiceTagASNLenOfLen"])+str(self.fields["ChoiceTagASNIdLen"])+str(self.fields["NegTokenTagASNId"])+str(self.fields["NegTokenTagASNLenOfLen"])+str(self.fields["NegTokenTagASNIdLen"])+str(self.fields["Tag0ASNId"])+str(self.fields["Tag0ASNIdLen"])+str(self.fields["NegoStateASNId"])+str(self.fields["NegoStateASNLen"])+str(self.fields["NegoStateASNValue"])+str(self.fields["Tag1ASNId"])+str(self.fields["Tag1ASNIdLen"])+str(self.fields["Tag1ASNId2"])+str(self.fields["Tag1ASNId2Len"])+str(self.fields["Tag1ASNId2Str"])+str(self.fields["Tag2ASNId"])+str(self.fields["Tag2ASNIdLenOfLen"])+str(self.fields["Tag2ASNIdLen"])+str(self.fields["Tag3ASNId"])+str(self.fields["Tag3ASNIdLenOfLen"])+str(self.fields["Tag3ASNIdLen"])
-
-
-                #Packet Struct len
-		self.fields["Len"] = struct.pack("<h",len(StructLen)+1)
-		self.fields["SecBlobLen"] = struct.pack("<H", len(AsnLen+CalculateSecBlob))
-                self.fields["SecBlobOffSet"] = struct.pack("<h",len(StructLen)+64)
-
-		###### ASN Stuff
-                if len(CalculateSecBlob) > 255:
-		   self.fields["Tag3ASNIdLen"] = struct.pack(">H", len(CalculateSecBlob))
-                else:
-                   self.fields["Tag3ASNIdLenOfLen"] = "\x81"
-		   self.fields["Tag3ASNIdLen"] = struct.pack(">B", len(CalculateSecBlob))
-
-                if len(AsnLen+CalculateSecBlob)-3 > 255:
-		   self.fields["ChoiceTagASNIdLen"] = struct.pack(">H", len(AsnLen+CalculateSecBlob)-4)
-                else:
-                   self.fields["ChoiceTagASNLenOfLen"] = "\x81"
-		   self.fields["ChoiceTagASNIdLen"] = struct.pack(">B", len(AsnLen+CalculateSecBlob)-3)
-
-                if len(AsnLen+CalculateSecBlob)-7 > 255:
-		   self.fields["NegTokenTagASNIdLen"] = struct.pack(">H", len(AsnLen+CalculateSecBlob)-8)
-                else:
-                   self.fields["NegTokenTagASNLenOfLen"] = "\x81"
-		   self.fields["NegTokenTagASNIdLen"] = struct.pack(">B", len(AsnLen+CalculateSecBlob)-7)
-                
-                tag2length = CalculateSecBlob+str(self.fields["Tag3ASNId"])+str(self.fields["Tag3ASNIdLenOfLen"])+str(self.fields["Tag3ASNIdLen"])
-
-                if len(tag2length) > 255:
-		   self.fields["Tag2ASNIdLen"] = struct.pack(">H", len(tag2length))
-                else:
-                   self.fields["Tag2ASNIdLenOfLen"] = "\x81"
-		   self.fields["Tag2ASNIdLen"] = struct.pack(">B", len(tag2length))
-
-		self.fields["Tag1ASNIdLen"] = struct.pack(">B", len(str(self.fields["Tag1ASNId2"])+str(self.fields["Tag1ASNId2Len"])+str(self.fields["Tag1ASNId2Str"])))
-		self.fields["Tag1ASNId2Len"] = struct.pack(">B", len(str(self.fields["Tag1ASNId2Str"])))
-
-		###### Workstation Offset
-		CalculateOffsetWorkstation = str(self.fields["NTLMSSPSignature"])+str(self.fields["NTLMSSPSignatureNull"])+str(self.fields["NTLMSSPMessageType"])+str(self.fields["NTLMSSPNtWorkstationLen"])+str(self.fields["NTLMSSPNtWorkstationMaxLen"])+str(self.fields["NTLMSSPNtWorkstationBuffOffset"])+str(self.fields["NTLMSSPNtNegotiateFlags"])+str(self.fields["NTLMSSPNtServerChallenge"])+str(self.fields["NTLMSSPNtReserved"])+str(self.fields["NTLMSSPNtTargetInfoLen"])+str(self.fields["NTLMSSPNtTargetInfoMaxLen"])+str(self.fields["NTLMSSPNtTargetInfoBuffOffset"])+str(self.fields["NegTokenInitSeqMechMessageVersionHigh"])+str(self.fields["NegTokenInitSeqMechMessageVersionLow"])+str(self.fields["NegTokenInitSeqMechMessageVersionBuilt"])+str(self.fields["NegTokenInitSeqMechMessageVersionReserved"])+str(self.fields["NegTokenInitSeqMechMessageVersionNTLMType"])
-
-		###### AvPairs Offset
-		CalculateLenAvpairs = str(self.fields["NTLMSSPNTLMChallengeAVPairsId"])+str(self.fields["NTLMSSPNTLMChallengeAVPairsLen"])+str(self.fields["NTLMSSPNTLMChallengeAVPairsUnicodeStr"])+str(self.fields["NTLMSSPNTLMChallengeAVPairs1Id"])+str(self.fields["NTLMSSPNTLMChallengeAVPairs1Len"])+str(self.fields["NTLMSSPNTLMChallengeAVPairs1UnicodeStr"])+(self.fields["NTLMSSPNTLMChallengeAVPairs2Id"])+str(self.fields["NTLMSSPNTLMChallengeAVPairs2Len"])+str(self.fields["NTLMSSPNTLMChallengeAVPairs2UnicodeStr"])+(self.fields["NTLMSSPNTLMChallengeAVPairs3Id"])+str(self.fields["NTLMSSPNTLMChallengeAVPairs3Len"])+str(self.fields["NTLMSSPNTLMChallengeAVPairs3UnicodeStr"])+(self.fields["NTLMSSPNTLMChallengeAVPairs5Id"])+str(self.fields["NTLMSSPNTLMChallengeAVPairs5Len"])+str(self.fields["NTLMSSPNTLMChallengeAVPairs5UnicodeStr"])+(self.fields["NTLMSSPNTLMChallengeAVPairs7Id"])+str(self.fields["NTLMSSPNTLMChallengeAVPairs7Len"])+str(self.fields["NTLMSSPNTLMChallengeAVPairs7UnicodeStr"])+(self.fields["NTLMSSPNTLMChallengeAVPairs6Id"])+str(self.fields["NTLMSSPNTLMChallengeAVPairs6Len"])
-
-		##### Workstation Offset Calculation:
-		self.fields["NTLMSSPNtWorkstationBuffOffset"] = struct.pack("<i", len(CalculateOffsetWorkstation))
-		self.fields["NTLMSSPNtWorkstationLen"] = struct.pack("<h", len(str(self.fields["NTLMSSPNtWorkstationName"])))
-		self.fields["NTLMSSPNtWorkstationMaxLen"] = struct.pack("<h", len(str(self.fields["NTLMSSPNtWorkstationName"])))
-
-		##### Target Offset Calculation:
-		self.fields["NTLMSSPNtTargetInfoBuffOffset"] = struct.pack("<i", len(CalculateOffsetWorkstation+str(self.fields["NTLMSSPNtWorkstationName"])))
-		self.fields["NTLMSSPNtTargetInfoLen"] = struct.pack("<h", len(CalculateLenAvpairs))
-		self.fields["NTLMSSPNtTargetInfoMaxLen"] = struct.pack("<h", len(CalculateLenAvpairs))
-		
-		##### IvPair Calculation:
-		self.fields["NTLMSSPNTLMChallengeAVPairs7Len"] = struct.pack("<h", len(str(self.fields["NTLMSSPNTLMChallengeAVPairs7UnicodeStr"])))
-		self.fields["NTLMSSPNTLMChallengeAVPairs5Len"] = struct.pack("<h", len(str(self.fields["NTLMSSPNTLMChallengeAVPairs5UnicodeStr"])))
-		self.fields["NTLMSSPNTLMChallengeAVPairs3Len"] = struct.pack("<h", len(str(self.fields["NTLMSSPNTLMChallengeAVPairs3UnicodeStr"])))
-		self.fields["NTLMSSPNTLMChallengeAVPairs2Len"] = struct.pack("<h", len(str(self.fields["NTLMSSPNTLMChallengeAVPairs2UnicodeStr"])))
-		self.fields["NTLMSSPNTLMChallengeAVPairs1Len"] = struct.pack("<h", len(str(self.fields["NTLMSSPNTLMChallengeAVPairs1UnicodeStr"])))
-		self.fields["NTLMSSPNTLMChallengeAVPairsLen"] = struct.pack("<h", len(str(self.fields["NTLMSSPNTLMChallengeAVPairsUnicodeStr"])))
-
-class SMB2Session2Data(Packet):
-	fields = OrderedDict([
-		("Len",             "\x09\x00"),
-		("SessionFlag",     "\x00\x00"),
-		("SecBlobOffSet",   "\x00\x00\x00\x00"),
+class SMB2Nego(Packet):
+    fields = OrderedDict([
+        ("Wordcount", "\x00"),
+        ("Bcc", "\x62\x00"),
+        ("Data", "")
     ])
 
+    def calculate(self):
+        self.fields["Bcc"] = struct.pack("<H",len(str(self.fields["Data"])))
 
-
+class SMB2NegoData(Packet):
+    fields = OrderedDict([
+        ("StrType","\x02" ),
+        ("dialect", "NT LM 0.12\x00"),
+        ("StrType1","\x02"),
+        ("dialect1", "SMB 2.002\x00"),
+        ("StrType2","\x02"),
+        ("dialect2", "SMB 2.???\x00"),
+    ])

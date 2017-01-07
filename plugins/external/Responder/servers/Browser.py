@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-# This file is part of Responder, a network take-over set of tools 
-# created and maintained by Laurent Gaffie.
-# email: laurent.gaffie@gmail.com
+# This file is part of Responder
+# Original work by Laurent Gaffie - Trustwave Holdings
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -22,18 +22,18 @@ import struct
 
 def WorkstationFingerPrint(data):
 	return {
- 		"\x04\x00"    :"Windows 95",
-		"\x04\x0A"    :"Windows 98",
-		"\x04\x5A"    :"Windows ME",
- 		"\x05\x00"    :"Windows 2000",
- 		"\x05\x01"    :"Windows XP",
- 		"\x05\x02"    :"Windows XP(64-Bit)/Windows 2003",
- 		"\x06\x00"    :"Windows Vista/Server 2008",
- 		"\x06\x01"    :"Windows 7/Server 2008R2",
- 		"\x06\x02"    :"Windows 8/Server 2012",
- 		"\x06\x03"    :"Windows 8.1/Server 2012R2",
-		"\x0A\x00"    :"Windows 10/Server 2016",
- 	}.get(data, 'Unknown')
+		"\x04\x00"    :"Windows 95",
+		"\x04\x10"    :"Windows 98",
+		"\x04\x90"    :"Windows ME",
+		"\x05\x00"    :"Windows 2000",
+		"\x05\x01"    :"Windows XP",
+		"\x05\x02"    :"Windows XP(64-Bit)/Windows 2003",
+		"\x06\x00"    :"Windows Vista/Server 2008",
+		"\x06\x01"    :"Windows 7/Server 2008R2",
+		"\x06\x02"    :"Windows 8/Server 2012",
+		"\x06\x03"    :"Windows 8.1/Server 2012R2",
+		"\x10\x00"    :"Windows 10/Server 2016",
+	}.get(data, 'Unknown')
 
 
 def RequestType(data):

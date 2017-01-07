@@ -1,7 +1,8 @@
-#!/usr/bin/env python
-# This file is part of Responder, a network take-over set of tools 
-# created and maintained by Laurent Gaffie.
-# email: laurent.gaffie@gmail.com
+#! /usr/bin/env python
+# NBT-NS/LLMNR Responder
+# Created by Laurent Gaffie
+# Copyright (C) 2014 Trustwave Holdings, Inc.
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
