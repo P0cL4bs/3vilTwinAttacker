@@ -1016,6 +1016,18 @@ class WifiPumpkin(QWidget):
         self.PopUpPlugins.tableplugincheckbox.setEnabled(True)
         self.btn_cancelar.setEnabled(False)
 
+        try:
+            check_output(['nmcli', 'radio', 'wifi', "on"])  # old version
+        except Exception:
+            try:
+                check_output(['nmcli', 'nm', 'wifi', "on"])  # new version
+            except Exception as error:
+                return QMessageBox.warning(self, 'nmcli', str(error))
+        finally:
+            call(['rfkill', 'unblock', 'wifi'])
+            call(['service', 'NetworkManager', 'stop'])
+            call(['service', 'NetworkManager', 'start'])
+
     def delete_logger(self):
         ''' delete all logger file in logs/ '''
         content = Refactor.exportHtml()
