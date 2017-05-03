@@ -1214,15 +1214,6 @@ class WifiPumpkin(QWidget):
                     ' for create AP or try use with local connetion(Ethernet).'.format(
                     str(self.selectCard.currentText()),line))
 
-        # check if kali linux is using wireless interface for share internet
-        if  self.interfacesLink['activated'][1] == 'wireless' and dist()[0] == 'Kali':
-            return QMessageBox.information(self,'Network Information',
-            "The Kali Linux don't have support to use with 2 wireless"
-            "(1 for connected internet/2 for WiFi-Pumpkin AP)."
-            " because does not exclude correctly "
-            "adapter in '/etc/NetworkManager/NetworkManager.conf'.\n\n"
-            "( if you have any solution for this send me feedback ).")
-
         # check if range ip class is same
         dh, gateway = self.PumpSettingsTAB.getPumpkinSettings()['router'],str(self.EditGateway.text())
         if dh[:len(dh)-len(dh.split('.').pop())] == gateway[:len(gateway)-len(gateway.split('.').pop())]:
