@@ -29,7 +29,7 @@ class frm_ReportLogger(PumpkinModule):
     ''' called report logger in files '''
     def __init__(self,sessions,parent = None):
         super(frm_ReportLogger, self).__init__(parent)
-        self.setWindowTitle('WiFi-Pumpkin - Report Logger')
+        self.setWindowTitle('Report Logger')
         self.loadtheme(self.configure.XmlThemeSelected())
         self.setGeometry(0,0,320,400)
         self.Main     = QVBoxLayout()
@@ -60,16 +60,16 @@ class frm_ReportLogger(PumpkinModule):
     def convertIt(self,printer):
         # generate file pdf
         self.ExportPDF.print_(printer)
-        QMessageBox.information(self, 'WiFi Pumpkin Report PDF', 'file PDF has been generated successfully.')
+        QMessageBox.information(self, 'Report PDF', 'PDF file has been generated successfully.')
 
     def exportFilesSystem(self):
         # export HTML or pdf file
         all_unchecked = self.get_all_items_Unchecked()
         if not self.checkHTML.isChecked() and not self.checkPDF.isChecked():
             return QMessageBox.warning(self, 'WiFi Pumpkin Options',
-            'You have to select a <strong>option</strong> file type  for export.')
+            'You have to select a file type for exporting.')
         if  len(all_unchecked.keys()) == 9:
-            return QMessageBox.warning(self, 'WiFi Pumpkin empty session',
+            return QMessageBox.warning(self, 'Error: Empty Session',
             'logger:ERROR Could not find log files.')
 
         sessions_activated = ''
@@ -89,7 +89,7 @@ class frm_ReportLogger(PumpkinModule):
             if len(filename[0]) != 0:
                 with open(str(filename[0]),'w') as filehtml:
                     filehtml.write(contents['HTML']),filehtml.close()
-                QMessageBox.information(self, 'WiFi Pumpkin Report HTML', 'file logs has been saved successfully.')
+                QMessageBox.information(self, 'Report HTML', 'HTML file has been generated with success.')
 
         elif self.checkPDF.isChecked():
             filename = QFileDialog.getSaveFileNameAndFilter(self,
@@ -151,15 +151,15 @@ class frm_ReportLogger(PumpkinModule):
         self.GroupBoxINFO.setTitle('Information:')
         self.labelStart = QLabel()
         self.labelStop = QLabel()
-        self.layoutGroupINFO.addRow('started AP at:',self.labelStart)
-        self.layoutGroupINFO.addRow('stoped AP at:',self.labelStop)
+        self.layoutGroupINFO.addRow('Started AP at:',self.labelStart)
+        self.layoutGroupINFO.addRow('Stopped AP at:',self.labelStop)
 
         # get all session data add combobox
         self.CB_Data_Logger = QComboBox(self)
         all_sessions = []
         for key in self.sessions.keys():
             all_sessions.append(self.sessions[key]['started'])
-        all_sessions.append('select All logger file...')
+        all_sessions.append('Select all logger files...')
         self.CB_Data_Logger.addItems(all_sessions)
         self.connect(self.CB_Data_Logger, SIGNAL('activated(QString)'), self.combo_clicked)
         index = self.CB_Data_Logger.findText(all_sessions[len(all_sessions)-2], Qt.MatchFixedString)

@@ -13,7 +13,7 @@ def check_dep_pumpkin():
     # check hostapd
     hostapd = popen('which hostapd').read().split('\n')
     if not path.isfile(hostapd[0]): notinstall('hostapd')
-    # checck source.tar.gz tamplate module
+    # check source.tar.gz tamplate module
     if not path.isfile('templates/Update/Windows_Update/Settins_WinUpdate.html'):
         copy('settings/source.tar.gz','templates/')
         system('cd templates/ && tar -xf source.tar.gz')

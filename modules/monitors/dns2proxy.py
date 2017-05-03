@@ -28,7 +28,7 @@ class frm_dns2proxy(PumpkinModule):
             self.thread.append(dns)
             dns.start()
             return
-        QMessageBox.warning(self,'error dns2proxy logger','dns2proxy::capture no logger found')
+        QMessageBox.warning(self,'Dns2proxy Logger','dns2proxy::capture no logger found')
 
 
     def loggerdns(self,data):
