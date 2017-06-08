@@ -14,4 +14,6 @@ install:
  - sudo chmod +x installer.sh
  - sudo ./installer.sh --install
 
-script: exit 0
+script:
+ - ./make_deb.sh
+ - exit 0
