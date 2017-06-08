@@ -79,6 +79,7 @@ if [ -d "$INSTALL_PATH" ]; then
     done
 
     rm -rf $INSTALL_PATH/templates/Update
+    rm -rf $INSTALL_PATH/core/config/commits/Rcommits.cfg
 fi
 EOF
 ###### End of the DEBIAN/prerm file ######
