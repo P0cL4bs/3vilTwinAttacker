@@ -2,7 +2,8 @@ from datetime import date
 from os import path, remove
 from shutil import copyfile
 from core.loaders.models.PackagesUI import *
-from core.servers.http_handler.ServerHTTP import ThreadHTTPServerPhishing
+from core.utility.threads import ProcessThread
+import core.utility.constants as C
 
 """
 Description:
@@ -10,7 +11,7 @@ Description:
     for Fake update windows.
 
 Copyright:
-    Copyright (C) 2015-2016 Marcos Nesster P0cl4bs Team
+    Copyright (C) 2015-2017 Marcos Nesster P0cl4bs Team
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -209,10 +210,17 @@ class frm_update_attack(PumpkinModule):
 
     def threadServer(self,directory,ip):
         global threadloading
-        self.threadHTTP = ThreadHTTPServerPhishing(80,directory)
-        self.threadHTTP.request.connect(self.logPhising)
-        threadloading['server'].append(self.threadHTTP)
-        self.threadHTTP.start()
+        #self.threadHTTP.request.connect(self.logPhising)
+        if self.rb_windows.isChecked():
+            self.path_server = C.TEMP_Win
+        elif self.rb_java.isChecked():
+            self.path_server = C.TEMP_Java
+
+        self.proc_Web_server = ProcessThread({'python': ['-m',
+        'SimpleHTTPServer', '80']},self.path_server)
+        self.proc_Web_server._ProcssOutput.connect(self.logPhising)
+        threadloading['server'].append(self.proc_Web_server)
+        self.proc_Web_server.start()
         self.status.showMessage("::Started >> [HTTP::"+ip+" ::Port 80]")
 
     def getpath(self):

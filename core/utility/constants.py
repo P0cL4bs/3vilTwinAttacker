@@ -1,7 +1,28 @@
 import os
 
-dir_of_executable = os.path.dirname(__file__)
+"""
+Description:
+    This program is a module for wifi-pumpkin.py file which includes functionality
+    declare constants .
 
+Copyright:
+    Copyright (C) 2015-2017 Marcos Nesster P0cl4bs Team
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>
+"""
+
+dir_of_executable = os.path.dirname(__file__)
+dir_path          = os.getcwd()
 # window constants
 GEOMETRYH = 820
 GEOMETRYW = 500
@@ -20,6 +41,9 @@ NOTIFYSTYLE = "; ".join((
     "border: 1dpx solid #996633",
     "padding: 5px"))
 
+
+PUMPKINPROXY_notify = 'the package requirement mitmproxy==0.18.2 is ' \
+                      'not satisfied.'
 
 #donation button
 DONATE = 'https://github.com/P0cL4bs/WiFi-Pumpkin#donation'
@@ -63,6 +87,11 @@ TEMPLATE_CLONE  = 'templates/phishing/web_server/index.html'
 EXTRACT_TEMP    = 'cd templates/ && tar -xf fakeupdate.tar.gz'
 LCOMMITS        = 'https://raw.githubusercontent.com/P0cL4bs/WiFi-Pumpkin/master/Core/config/commits/Lcommits.cfg'
 SOURCE_URL      = 'https://github.com/P0cL4bs/WiFi-Pumpkin.git'
+
+#settings template
+TEMP_CUSTOM = dir_path+'/templates/phishing/custom'
+TEMP_Win    = dir_path+'/templates/fakeupdate/Windows_Update'
+TEMP_Java   = dir_path+'/templates/fakeupdate/Java_Update'
 
 #plugins path
 RESPONDER_EXEC  = 'plugins/external/Responder/Responder.py'

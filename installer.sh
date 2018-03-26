@@ -54,7 +54,12 @@ func_install(){
 	apt-get install -y python-qt4 python-scapy hostapd rfkill
 	apt-get install -y python-dev git
 	apt-get install -y libpcap-dev
+	dist=$(tr -s ' \011' '\012' < /etc/issue | head -n 1)
+    if [ "$dist" = "Kali" ]; then
+        apt-get install libssl1.0
+    fi
 	pip install -r requirements.txt
+	pip install mitmproxy==0.18.2
 	echo "----------------------------------------"
 	echo "[=]$bldblu checking dependencies $txtrst "
 	func_check_install "hostapd"

@@ -50,6 +50,12 @@ Version 0.8.5
 - fixed small bug with Table when add new users
 - added new icon WiFi-Pumpkin
 - fixed group all object PyQt4 QtGui,QtCore
+- fixed except when try import QtGui
+- fixed detect if range ip class is same the [DHCP Server] #285
+- fixed import QtGui thanks @Brain2000 #282
+- fixed redirect Traffic from all domain [dns spoof] #296
+- added run WP without mitmproxy packager #309
+- fixed cryptography kali 2017.3 thanks @yudevan #315
 
 Version 0.8.4
 -------------

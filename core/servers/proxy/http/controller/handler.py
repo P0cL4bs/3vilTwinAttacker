@@ -1,7 +1,10 @@
-from plugins.extension import *
 from threading import Thread
 from core.utility.collection import  SettingsINI
-from mitmproxy import controller,flow
+try:
+    from mitmproxy import controller,flow
+    from plugins.extension import *
+except ImportError:
+    pass
 import core.utility.constants as C
 
 

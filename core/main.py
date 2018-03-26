@@ -55,6 +55,13 @@ from isc_dhcp_leases.iscdhcpleases import IscDhcpLeases
 from netfilterqueue import NetfilterQueue
 from core.servers.proxy.tcp.intercept import ThreadSniffingPackets
 
+pump_proxy_lib = True #check package is installed
+try:
+    from mitmproxy import proxy, flow, options
+    from mitmproxy.proxy.server import ProxyServer
+except ImportError as e:
+    pump_proxy_lib = False
+
 """
 Description:
     This program is a core for wifi-pumpkin.py. file which includes functionality
@@ -89,6 +96,12 @@ class Initialize(QtGui.QMainWindow):
     def __init__(self, parent=None):
         super(Initialize, self).__init__(parent)
         self.FSettings      = frm_Settings()
+
+        # check mitmproxy lib is installed
+        if not pump_proxy_lib and self.FSettings.Settings.get_setting('plugins',
+            'pumpkinproxy_plugin', format=bool):
+            self.FSettings.Settings.set_setting('plugins', 'pumpkinproxy_plugin', False)
+            self.FSettings.Settings.set_setting('plugins', 'dns2proxy_plugin', True)
         self.form_widget    = WifiPumpkin(self)
 
         #for exclude USB adapter if the option is checked in settings tab
@@ -460,6 +473,9 @@ class WifiPumpkin(QtGui.QWidget):
     def pumpkinProxy_TAB_Content(self):
         ''' add Layout page PumpkinProxy in dashboard '''
         self.PumpkinProxyTAB = PumpkinMitmproxy(self)
+        if not pump_proxy_lib:
+            infoLabel = ServiceNotify(C.PUMPKINPROXY_notify,title='Package Requirement')
+            self.ContentTabPumpPro.addWidget(infoLabel)
         self.ContentTabPumpPro.addLayout(self.PumpkinProxyTAB)
 
     def statusAP_TAB_Content(self):
@@ -649,7 +665,7 @@ class WifiPumpkin(QtGui.QWidget):
 
         self.donatelink = C.DONATE
         self.donateLabel = ServiceNotify(C.DONATE_TXT,title='Support development',
-        link=self.donatelink,timeout=10000)
+        link=self.donatelink,timeout=15000)
         # set main page Tool
         self.widget = QtGui.QWidget()
         self.layout = QtGui.QVBoxLayout(self.widget)
@@ -767,6 +783,8 @@ class WifiPumpkin(QtGui.QWidget):
             self.PopUpPlugins.check_noproxy.setChecked(True)
             self.PopUpPlugins.GroupPluginsProxy.setChecked(False)
             self.PopUpPlugins.tableplugincheckbox.setEnabled(True)
+        if not pump_proxy_lib:
+            self.PopUpPlugins.check_pumpkinProxy.setDisabled(True)
         self.PopUpPlugins.checkGeneralOptions()
 
     def check_key_security_invalid(self):
@@ -1235,13 +1253,16 @@ class WifiPumpkin(QtGui.QWidget):
                     str(self.selectCard.currentText()),line))
 
         # check if range ip class is same
-        dh, gateway = self.PumpSettingsTAB.getPumpkinSettings()['router'],str(self.EditGateway.text())
-        if dh[:len(dh)-len(dh.split('.').pop())] == gateway[:len(gateway)-len(gateway.split('.').pop())]:
-            return QtGui.QMessageBox.warning(self,'DHCP Server settings',
-                'The DHCP server check if range ip class is same.'
-                'it works, but not share internet connection in some case.\n'
-                'for fix this, You need change on tab (settings -> Class Ranges)'
-                'now you have choose the Class range different of your network.')
+        gateway_wp, gateway = self.PumpSettingsTAB.getPumpkinSettings()['router'],self.interfacesLink['gateway']
+        if gateway != None:
+            if gateway_wp[:len(gateway_wp)-len(gateway_wp.split('.').pop())] == \
+                gateway[:len(gateway)-len(gateway.split('.').pop())]:
+                return QtGui.QMessageBox.warning(self,'DHCP Server settings',
+                    'The <b>DHCP server</b> check if range ip class is same.'
+                    'it works, but not share internet connection in some case.<br>'
+                    'for fix this, You need change on tab <b> (settings -> Class Ranges)</b>'
+                    ' now you have choose the Class range different of your network.')
+        del(gateway,gateway_wp)
 
         # Check the key
         if self.GroupApPassphrase.isChecked():

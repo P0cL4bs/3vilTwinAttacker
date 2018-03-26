@@ -33,13 +33,11 @@ if version_info.major != 2:
 
 if __name__ == '__main__':
     from core.loaders.checker.depedences import check_dep_pumpkin
-    try:
-        from core.loaders.checker.networkmanager import CLI_NetworkManager,UI_NetworkManager
-        from core.utility.collection import SettingsINI
-        from core.utility.application import ApplicationLoop,QtGui
-        from core.main import Initialize
-    except ImportError:
-        exit('WiFi-Pumpkin need PyQt4 :(')
+    from PyQt4 import QtGui
+    from core.utility.application import ApplicationLoop
+    from core.main import Initialize
+    from core.loaders.checker.networkmanager import CLI_NetworkManager, UI_NetworkManager
+    from core.utility.collection import SettingsINI
 
     check_dep_pumpkin()
     from os import getuid

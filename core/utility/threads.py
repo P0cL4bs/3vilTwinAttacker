@@ -16,10 +16,13 @@ from PyQt4.QtCore import QThread,pyqtSignal,SIGNAL,pyqtSlot,QProcess,QObject,SLO
 from PyQt4.QtGui import QMessageBox
 from plugins.external.sergio_proxy.plugins import *
 from multiprocessing import Process,Manager
-from core.servers.proxy.http.controller.handler import MasterHandler
-from mitmproxy import proxy,flow,options
-from mitmproxy.proxy.server import ProxyServer
 import core.utility.constants as C
+try:
+    from core.servers.proxy.http.controller.handler import MasterHandler
+    from mitmproxy import proxy,flow,options
+    from mitmproxy.proxy.server import ProxyServer
+except Exception:
+    pass
 
 """
 Description:
@@ -173,8 +176,9 @@ class ThreadFastScanIP(QThread):
 
 class ProcessThread(QObject):
     _ProcssOutput = pyqtSignal(object)
-    def __init__(self,cmd,):
+    def __init__(self,cmd ,directory_exec=None):
         QObject.__init__(self)
+        self.directory_exec = directory_exec
         self.cmd = cmd
 
     def getNameThread(self):
@@ -188,6 +192,8 @@ class ProcessThread(QObject):
     def start(self):
         self.procThread = QProcess(self)
         self.procThread.setProcessChannelMode(QProcess.MergedChannels)
+        if self.directory_exec:
+            self.procThread.setWorkingDirectory(self.directory_exec)
         QObject.connect(self.procThread, SIGNAL('readyReadStandardOutput()'), self, SLOT('readProcessOutput()'))
         self.procThread.start(self.cmd.keys()[0],self.cmd[self.cmd.keys()[0]])
         print '[New Thread {} ({})]'.format(self.procThread.pid(),self.objectName())

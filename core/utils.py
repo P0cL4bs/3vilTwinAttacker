@@ -11,7 +11,10 @@ from PyQt4 import QtCore
 from PyQt4 import QtGui
 import logging
 import signal
-import configparser
+try:
+    import configparser
+except:
+    import ConfigParser as configparser
 import core.utility.constants as C
 from shlex import split
 from glob import glob

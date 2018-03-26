@@ -10,12 +10,15 @@ from core.widgets.docks.dockmonitor import (
 from core.widgets.pluginssettings import PumpkinProxySettings
 from core.utility.collection import SettingsINI
 from plugins.external.scripts import *
-from plugins.extension import *
 from functools import partial
 from plugins.analyzers import *
 import core.utility.constants as C
 from core.widgets.customiseds import AutoGridLayout
-
+load_plugins = True
+try:
+    from plugins.extension import *
+except ImportError:
+    load_plugins = False
 """
 Description:
     This program is a core for wifi-pumpkin.py. file which includes functionality
@@ -400,9 +403,10 @@ class PumpkinMitmproxy(QtGui.QVBoxLayout):
 
     def search_all_ProxyPlugins(self):
         ''' load all plugins function '''
-        plugin_classes = plugin.PluginTemplate.__subclasses__()
-        for p in plugin_classes:
-            self.plugins.append(p())
+        if load_plugins:
+            plugin_classes = plugin.PluginTemplate.__subclasses__()
+            for p in plugin_classes:
+                self.plugins.append(p())
 
 class ProxySSLstrip(QtGui.QVBoxLayout):
     ''' settings  Transparent Proxy '''
