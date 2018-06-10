@@ -1,6 +1,7 @@
 from plugins.external.sergio_proxy.plugins.plugin import Plugin
 from subprocess import Popen
 from tempfile import NamedTemporaryFile
+import logging
 import os
 from pipes import quote
 #Uncomment to use
