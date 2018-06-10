@@ -1,5 +1,6 @@
 import logging
 from cStringIO import StringIO
+from PIL import Image, ImageFile
 
 from plugins.external.sergio_proxy.plugins.plugin import Plugin
 
@@ -9,9 +10,6 @@ class Upsidedownternet(Plugin):
     has_opts = False
     implements = ["handleResponse","handleHeader"]
     def initialize(self,options):
-        from PIL import Image,ImageFile
-        globals()['Image'] = Image
-        globals()['ImageFile'] = ImageFile
         self.options = options 
     def handleHeader(self,request,key,value):
         '''Kill the image skipping that's in place for speed reasons'''
