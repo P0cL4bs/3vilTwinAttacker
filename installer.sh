@@ -49,7 +49,7 @@ func_install(){
 	fi
 	apt-get update
 	apt-get install -y python-pip libffi-dev libssl-dev libxml2-dev libxslt1-dev zlib1g-dev
-	apt-get install -y libarchive-dev
+	apt-get install -y libarchive-dev libjpeg-dev
 	apt-get install -y build-essential libnetfilter-queue-dev
 	apt-get install -y python-qt4 python-scapy hostapd rfkill
 	apt-get install -y python-dev git
