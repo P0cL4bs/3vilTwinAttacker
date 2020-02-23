@@ -54,6 +54,7 @@ func_install(){
 	apt-get install -y python-qt4 python-scapy hostapd rfkill
 	apt-get install -y python-dev git
 	apt-get install -y libpcap-dev
+	apt-get install python-qt4
 	dist=$(tr -s ' \011' '\012' < /etc/issue | head -n 1)
     if [ "$dist" = "Kali" ]; then
         apt-get install libssl1.0
